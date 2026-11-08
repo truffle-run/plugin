@@ -1,0 +1,1 @@
+# Domains whose owners asked TruffleBot not to crawl them. One per line.

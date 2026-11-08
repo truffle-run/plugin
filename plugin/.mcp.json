@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "truffle": {
+      "command": "node",
+      "args": [
+        "--no-warnings",
+        "${CLAUDE_PLUGIN_ROOT}/server/truffle-mcp.mjs"
+      ]
+    }
+  }
+}

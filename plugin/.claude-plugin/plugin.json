@@ -1,0 +1,20 @@
+{
+  "name": "truffle",
+  "version": "0.3.0",
+  "description": "Shopify leads for your agent: search German Shopify stores, research each one live, and get every way to reach them.",
+  "author": {
+    "name": "Truffle",
+    "url": "https://truffle.run"
+  },
+  "homepage": "https://truffle.run",
+  "repository": "https://github.com/truffle-run/plugin",
+  "license": "UNLICENSED",
+  "keywords": [
+    "shopify",
+    "leads",
+    "prospecting",
+    "mcp",
+    "germany",
+    "impressum"
+  ]
+}
