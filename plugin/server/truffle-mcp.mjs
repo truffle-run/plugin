@@ -53495,7 +53495,7 @@ function bareHost(host) {
 }
 
 // ../core/src/db.ts
-var JSON_COLS = ["ships_to", "product_types", "top_tags", "apps", "socials", "signals", "channels", "carriers", "pages"];
+var JSON_COLS = ["ships_to", "product_types", "top_tags", "apps", "socials", "signals", "channels", "carriers", "pages", "sister_stores"];
 var SCHEMA = `
 CREATE TABLE IF NOT EXISTS stores (
   domain TEXT PRIMARY KEY,
@@ -53626,7 +53626,13 @@ function migrate(db) {
     ["instagram_followers", "INTEGER"],
     ["instagram_posts", "INTEGER"],
     ["instagram_last_post_at", "TEXT"],
-    ["instagram_checked_at", "TEXT"]
+    ["instagram_checked_at", "TEXT"],
+    ["shopify_plan", "TEXT"],
+    // starter | basic | grow | advanced | plus
+    ["shopify_plan_source", "TEXT"],
+    // app_config (exact, an app prints Shopify's plan) | sister_stores (likely Plus)
+    ["sister_stores", "TEXT NOT NULL DEFAULT '[]'"]
+    // linked country/language versions that are separate Shopify stores
   ];
   for (const [name, type] of add2) if (!have.has(name)) db.exec(`ALTER TABLE stores ADD COLUMN ${name} ${type}`);
   if (!have.has("first_seen_at")) {
@@ -53746,7 +53752,7 @@ function mergeIndex(target, source) {
 }
 
 // ../core/src/history.ts
-var CHANGE_KINDS = ["status", "app_added", "app_removed", "theme", "name", "products", "price", "channel_added", "channel_removed", "legal_form", "followers"];
+var CHANGE_KINDS = ["status", "app_added", "app_removed", "theme", "name", "products", "price", "channel_added", "channel_removed", "legal_form", "followers", "plan"];
 var str = (v) => v == null ? null : String(v);
 function setDiff(kindAdded, kindRemoved, before2, after2) {
   if (!before2 || !after2) return [];
@@ -53773,6 +53779,8 @@ function diffStore(before2, after2) {
   const mb = before2.price_median;
   const ma = after2.price_median;
   if (mb && ma && Math.abs(ma - mb) / mb >= 0.15) out.push({ kind: "price", item: null, old: str(mb), new: str(ma) });
+  if (after2.shopify_plan_source === "app_config" && before2.shopify_plan_source === "app_config" && after2.shopify_plan && before2.shopify_plan && after2.shopify_plan !== before2.shopify_plan)
+    out.push({ kind: "plan", item: null, old: before2.shopify_plan, new: after2.shopify_plan });
   if (after2.legal_form && before2.legal_form && after2.legal_form !== before2.legal_form) out.push({ kind: "legal_form", item: null, old: before2.legal_form, new: after2.legal_form });
   const fb = before2.instagram_followers;
   const fa = after2.instagram_followers;
@@ -68261,6 +68269,31 @@ var undici = __toESM(require_undici(), 1);
 var import_whatwg_mimetype = __toESM(require_mime_type(), 1);
 
 // ../core/src/html.ts
+var PLAN_VALUES = {
+  shopify_plus: "plus",
+  "shopify plus": "plus",
+  plus_partner_sandbox: "plus",
+  enterprise: "plus",
+  plus: "plus",
+  unlimited: "advanced",
+  advanced: "advanced",
+  "advanced shopify": "advanced",
+  professional: "grow",
+  grow: "grow",
+  shopify: "grow",
+  basic: "basic",
+  "basic shopify": "basic",
+  starter: "starter"
+};
+var PLAN_KEY = /["']?(plan_name|plan_display_name|shop_shopify_plan|shopify_plan|shopifyPlan|shopify_plan_name|shopPlanName|shop_plan_name)["']?\s*:\s*["']([A-Za-z_ ]{4,30})["']/g;
+function shopifyPlanIn(html3) {
+  const votes = /* @__PURE__ */ new Map();
+  for (const m of html3.matchAll(PLAN_KEY)) {
+    const plan = PLAN_VALUES[m[2].trim().toLowerCase()];
+    if (plan) votes.set(plan, (votes.get(plan) ?? 0) + 1);
+  }
+  return [...votes.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
 var CHANNEL_HOSTS = [
   ["amazon", /(^|\.)amazon\.(de|com|co\.uk|fr|it|es|nl|at|se|pl)$/],
   ["etsy", /(^|\.)etsy\.com$/],
@@ -68391,6 +68424,14 @@ function parseStorefront(html3, pageUrl) {
     }
   });
   const lang = $2("html").attr("lang")?.trim() || null;
+  const alternateHosts = /* @__PURE__ */ new Set();
+  $2("link[rel='alternate'][hreflang][href]").each((_, el) => {
+    try {
+      const host = new URL($2(el).attr("href") ?? "", origin).host;
+      if (bare(host) !== bare(new URL(origin).host)) alternateHosts.add(host);
+    } catch {
+    }
+  });
   const shopIdMatch = html3.match(/"shopId"\s*:\s*(\d{4,})/) ?? html3.match(/[?&]shop_id=(\d{4,})/) ?? html3.match(/Shopify\.shopId\s*=\s*(\d{4,})/);
   const carriers = /* @__PURE__ */ new Set();
   const imgs = $2("img").toArray();
@@ -68419,9 +68460,12 @@ ${imgs.map((el) => $2(el).attr("alt") ?? "").join("\n")}`;
     channels: [...channels].sort(),
     pages: [...pages].sort(),
     carriers: [...carriers].sort(),
-    reviews: shopReviews($2)
+    reviews: shopReviews($2),
+    shopifyPlan: shopifyPlanIn(html3),
+    alternateHosts: [...alternateHosts].slice(0, 12)
   };
 }
+var bare = (host) => host.replace(/^www\./, "");
 function carriersInText(lines) {
   const text3 = lines.join("\n");
   return CARRIER_TEXT.filter(([, re]) => re.test(text3)).map(([c]) => c);
@@ -69092,8 +69136,25 @@ async function probeStore(input, opts = {}) {
     const count = meta?.product_count ?? 0;
     result.oldestProductAt = count > (products?.sample_size ?? 0) ? await fetchOldestProductDate(origin, count, { deadline }).catch(() => null) : products?.first_product_at ?? null;
     result.policyCarriers = await politeGet(`${origin}/policies/shipping-policy`, { deadline, maxBytes: 6e5 }).then((res) => res.status === 200 ? carriersInText(extractLines(res.text)) : []).catch(() => []);
+    result.sisterStores = await findSisterStores(page.alternateHosts, meta?.myshopify_domain ?? null, deadline);
   }
   return result;
+}
+async function findSisterStores(hosts, ownMyshopify, deadline) {
+  if (!ownMyshopify || !hosts.length) return [];
+  const pick2 = [...hosts].sort((a, b) => Number(a.split(".").length > 2) - Number(b.split(".").length > 2)).slice(0, 2);
+  const out = [];
+  for (const host of pick2) {
+    const other = await fetchMeta(`https://${host}`, { deadline }).catch(() => null);
+    if (other && other.myshopify_domain !== ownMyshopify) out.push(host);
+  }
+  return out;
+}
+function shopifyPlanColumns(p) {
+  const exact = p.page?.shopifyPlan ?? null;
+  if (exact) return { shopify_plan: exact, shopify_plan_source: "app_config", ...p.sisterStores ? { sister_stores: p.sisterStores } : {} };
+  if (!p.sisterStores) return {};
+  return p.sisterStores.length ? { shopify_plan: "plus", shopify_plan_source: "sister_stores", sister_stores: p.sisterStores } : { shopify_plan: null, shopify_plan_source: null, sister_stores: [] };
 }
 function ownerKey(i) {
   if (!i?.found || i.entity_type !== "company") return null;
@@ -69154,6 +69215,7 @@ function probeToRow(p, source) {
     // Carriers and the oldest product are only known on a full (withExtras) check; otherwise keep what's stored.
     ...p.policyCarriers ? { carriers: [.../* @__PURE__ */ new Set([...p.page?.carriers ?? [], ...p.policyCarriers])].sort() } : {},
     ...p.oldestProductAt !== void 0 ? { oldest_product_at: p.oldestProductAt } : {},
+    ...shopifyPlanColumns(p),
     ...companyColumns(p.impressum)
   };
 }
@@ -69237,6 +69299,7 @@ function withRevenue(db, r) {
     carriers: json(row2.carriers),
     pages: json(row2.pages),
     fulfilment: row2.fulfilment ?? null,
+    shopify_plan: row2.shopify_plan ? { plan: String(row2.shopify_plan), confidence: row2.shopify_plan_source === "app_config" ? "exact" : "likely", sister_stores: json(row2.sister_stores) } : null,
     reviews: row2.reviews_count ? { count: Number(row2.reviews_count), rating: n(row2.reviews_rating), source: row2.reviews_source ?? null } : null,
     instagram: row2.instagram_followers != null ? { followers: Number(row2.instagram_followers), posts: n(row2.instagram_posts), last_post: row2.instagram_last_post_at ?? null, checked: row2.instagram_checked_at?.slice(0, 10) ?? null } : null,
     company_group: others.length ? { stores: others.length + 1, others } : null,
@@ -69310,6 +69373,11 @@ function searchStores(db, f) {
     args.push(...f.legal_form);
   }
   if (f.multi_store) where.push("owner_stores >= 2");
+  if (f.shopify_plan?.length) {
+    where.push(`shopify_plan IN (${f.shopify_plan.map(() => "?").join(",")})`);
+    args.push(...f.shopify_plan);
+    if (f.shopify_plan_exact) where.push("shopify_plan_source = 'app_config'");
+  }
   for (const [col, values] of [["channels", f.channels], ["carriers", f.carriers], ["pages", f.pages]]) {
     for (const v of values ?? []) {
       where.push(`EXISTS (SELECT 1 FROM json_each(stores.${col}) WHERE value = ?)`);
@@ -69411,7 +69479,7 @@ function searchStores(db, f) {
   const total = db.prepare(`SELECT count(*) AS n FROM stores ${whereSql}`).get(...args).n;
   const rows = db.prepare(
     `SELECT domain, name, city, product_count, price_min, price_median, price_max, currency, product_types, apps, theme, ${SINCE_SQL} AS since, language, revenue_band,
-         category, subcategory, business_type, legal_form, instagram_followers, products_90d, app_spend, channels, owner_stores,
+         category, subcategory, business_type, legal_form, shopify_plan, shopify_plan_source, instagram_followers, products_90d, app_spend, channels, owner_stores,
          (SELECT c.kind || coalesce(':' || c.item, '') || ' ' || substr(c.at, 1, 10) FROM store_changes c WHERE c.domain = stores.domain ORDER BY c.at DESC LIMIT 1) AS last_change_text,
          (SELECT max(c.at) FROM store_changes c WHERE c.domain = stores.domain) AS last_change
        FROM stores ${whereSql} ORDER BY ${order[f.sort ?? "relevance"]} LIMIT ? OFFSET ?`
@@ -69437,6 +69505,7 @@ function searchStores(db, f) {
     };
     const channels = JSON.parse(String(r.channels ?? "[]"));
     if (r.legal_form) hit.company = String(r.legal_form);
+    if (r.shopify_plan) hit.plan = r.shopify_plan_source === "app_config" ? String(r.shopify_plan) : `${r.shopify_plan} (likely)`;
     if (r.instagram_followers != null) hit.ig = Number(r.instagram_followers);
     if (r.products_90d) hit.new_90d = Number(r.products_90d);
     if (r.app_spend) hit.app_spend = Number(r.app_spend);
@@ -69463,6 +69532,7 @@ function indexStats(db) {
     by_business_type: all("SELECT business_type, count(*) n FROM stores WHERE status='active' AND business_type IS NOT NULL GROUP BY 1 ORDER BY n DESC"),
     by_sells_to: all("SELECT sells_to, count(*) n FROM stores WHERE status='active' AND sells_to IS NOT NULL GROUP BY 1 ORDER BY n DESC"),
     by_signal: all("SELECT value signal, count(*) n FROM stores, json_each(stores.signals) WHERE status='active' GROUP BY 1 ORDER BY n DESC"),
+    by_shopify_plan: all("SELECT shopify_plan, shopify_plan_source source, count(*) n FROM stores WHERE status='active' AND shopify_plan IS NOT NULL GROUP BY 1, 2 ORDER BY n DESC"),
     by_legal_form: all("SELECT legal_form, count(*) n FROM stores WHERE status='active' AND legal_form IS NOT NULL GROUP BY 1 ORDER BY n DESC LIMIT 12"),
     by_channel: all("SELECT value channel, count(*) n FROM stores, json_each(stores.channels) WHERE status='active' GROUP BY 1 ORDER BY n DESC"),
     by_page: all("SELECT value page, count(*) n FROM stores, json_each(stores.pages) WHERE status='active' GROUP BY 1 ORDER BY n DESC"),
@@ -69597,6 +69667,8 @@ var searchInput = {
   revenue_min: external_exports.enum(REVENUE_BAND_IDS).optional().describe("Lowest estimated monthly online revenue band: under_10k, 10k_50k, 50k_250k, 250k_1m, over_1m. A rough estimate from traffic and prices, not reported figures."),
   revenue_max: external_exports.enum(REVENUE_BAND_IDS).optional().describe("Highest estimated monthly revenue band (same values as revenue_min)."),
   entity_type: external_exports.enum(["company", "natural_person"]).optional().describe("Who runs the store, from its Impressum: 'company' (GmbH, UG, AG\u2026) or 'natural_person' (one-person shop). Stores not checked yet never match."),
+  shopify_plan: external_exports.array(external_exports.enum(["starter", "basic", "grow", "advanced", "plus"])).optional().describe("Shopify plan, e.g. ['plus'] for Shopify Plus. Exact when one of the store's apps exposes Shopify's plan (a few % of stores); 'plus' is also inferred (likely) for brands running separate stores per country. Results show plan, with '(likely)' for inferred."),
+  shopify_plan_exact: external_exports.boolean().optional().describe("With shopify_plan: exact plans only, skip inferred 'likely Plus'."),
   legal_form: external_exports.array(external_exports.string()).optional().describe("Company legal form, any of e.g. ['GmbH', 'UG (haftungsbeschr\xE4nkt)', 'AG', 'GmbH & Co. KG', 'e.K.']. truffle_index_stats lists them with counts."),
   multi_store: external_exports.boolean().optional().describe("Only companies running two or more stores (same VAT or register number). Results show stores_in_group."),
   channels: external_exports.array(external_exports.enum(CHANNELS)).optional().describe("Store links to ALL of these marketplaces from its site, e.g. ['amazon'] for brands also selling on Amazon."),
@@ -69610,7 +69682,7 @@ var searchInput = {
   app_spend_min: external_exports.number().int().min(1).optional().describe("Estimated monthly spend on detected paid apps, EUR, at least this much (a floor: backend apps are invisible)."),
   added_app: external_exports.string().optional().describe("Installed this app id recently (since changed_since, default last 30 days). E.g. 'klaviyo'."),
   removed_app: external_exports.string().optional().describe("Removed this app id recently, e.g. 'yotpo' for stores that just dropped Yotpo: a switching moment."),
-  changed: external_exports.array(external_exports.enum(CHANGE_KINDS)).optional().describe("Had any of these changes since changed_since: status, app_added, app_removed, theme, name, products, price, channel_added, channel_removed, legal_form, followers."),
+  changed: external_exports.array(external_exports.enum(CHANGE_KINDS)).optional().describe("Had any of these changes since changed_since: status, app_added, app_removed, theme, name, products, price, channel_added, channel_removed, legal_form, followers, plan (Shopify plan upgrade/downgrade)."),
   changed_since: external_exports.string().regex(DATE).optional().describe("Start date for added_app / removed_app / changed (YYYY-MM-DD). Default 30 days ago."),
   category: external_exports.enum(CATEGORY_IDS).optional().describe("Main category, labelled by a model from the store's catalogue, e.g. 'jewellery', 'automotive', 'toys-games'. Works even when product types are empty or German. truffle_index_stats lists all with counts."),
   subcategory: external_exports.enum(SUBCATEGORY_IDS).optional().describe("Niche inside a category, e.g. 'streetwear' (fashion), 'rings' (jewellery), 'tabletop-rpg' (toys-games), 'natural-cosmetics'. Combine with signals: subcategory 'streetwear' + signals ['vegan'] = vegan streetwear. truffle_index_stats lists the common ones."),
@@ -69656,6 +69728,7 @@ function briefReport(r) {
     revenue: r.revenue_estimate?.label ?? null,
     labels: r.labels ?? null,
     opened: r.profile?.opened_est ?? null,
+    shopify_plan: r.profile?.shopify_plan ? `${r.profile.shopify_plan.plan}${r.profile.shopify_plan.confidence === "likely" ? " (likely)" : ""}` : void 0,
     new_products_90d: r.profile?.products_added.last_90d ?? null,
     instagram_followers: r.profile?.instagram?.followers ?? null,
     channels: r.profile?.channels.length ? r.profile.channels : void 0,

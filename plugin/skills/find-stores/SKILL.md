@@ -22,6 +22,7 @@ You need: **what the user sells**, **who it is for** (category, size, country), 
   - "young stores" → `opened_after: "2024-01"` (estimated opening month)
   - "just switched away from Yotpo" → `removed_app: "yotpo"`; "installed Klaviyo this month" → `added_app: "klaviyo"`;
     any recent change → `changed: [...]` or `sort: "recently_changed"`. `truffle_recent_changes` lists the change log itself.
+  - "Shopify Plus stores" → `shopify_plan: ["plus"]` (add `shopify_plan_exact: true` to skip inferred ones); "just upgraded" → `changed: ["plan"]`
   - "companies, not one-person shops" → `entity_type: "company"` (or `legal_form: ["GmbH"]`); "groups with several shops" → `multi_store: true`
   - "also on Amazon" → `channels: ["amazon"]`; "has a wholesale area" → `pages: ["wholesale"]`; "hiring" → `pages: ["careers"]`
   - "growing catalogue" → `products_added_90d_min: 20`; "spends on apps" → `app_spend_min: 100`
