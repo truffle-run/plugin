@@ -53378,11 +53378,11 @@ var APP_CATALOGUE = [
   { id: "instafeed", name: "Instafeed", price: 4, category: "social", patterns: [/instafeed/i] },
   { id: "elfsight", name: "Elfsight", price: 6, category: "social", patterns: [/elfsight/i] },
   // Print on demand / personalisation (their storefront scripts show the store prints to order)
-  { id: "printful", name: "Printful", price: 0, category: "print_on_demand", patterns: [/printful\.com/i] },
-  { id: "printify", name: "Printify", price: 0, category: "print_on_demand", patterns: [/printify\.com/i] },
-  { id: "gelato", name: "Gelato", price: 0, category: "print_on_demand", patterns: [/gelato(apis)?\.com/i] },
-  { id: "teeinblue", name: "Teeinblue", price: 0, category: "print_on_demand", patterns: [/teeinblue/i] },
-  { id: "customily", name: "Customily", price: 49, category: "print_on_demand", patterns: [/customily/i] }
+  { id: "printful", name: "Printful", price: 0, category: "print_on_demand", since: "2026-11-11", patterns: [/printful\.com/i] },
+  { id: "printify", name: "Printify", price: 0, category: "print_on_demand", since: "2026-11-11", patterns: [/printify\.com/i] },
+  { id: "gelato", name: "Gelato", price: 0, category: "print_on_demand", since: "2026-11-11", patterns: [/gelato(apis)?\.com/i] },
+  { id: "teeinblue", name: "Teeinblue", price: 0, category: "print_on_demand", since: "2026-11-11", patterns: [/teeinblue/i] },
+  { id: "customily", name: "Customily", price: 49, category: "print_on_demand", since: "2026-11-11", patterns: [/customily/i] }
 ];
 var APP_IDS = APP_CATALOGUE.map((a) => a.id);
 function detectApps(scriptSources, inlineScripts) {
@@ -53761,7 +53761,9 @@ function diffStore(before2, after2) {
   const out = [];
   if (after2.status && after2.status !== before2.status) out.push({ kind: "status", item: null, old: before2.status, new: after2.status });
   if (before2.status !== "active" || (after2.status ?? before2.status) !== "active") return out;
-  out.push(...setDiff("app_added", "app_removed", before2.apps, after2.apps));
+  const seenAt = before2.last_checked_at ?? "";
+  const detectable = (id) => (APP_CATALOGUE.find((a) => a.id === id)?.since ?? "") <= seenAt;
+  out.push(...setDiff("app_added", "app_removed", before2.apps, after2.apps).filter((c) => c.kind !== "app_added" || detectable(c.item)));
   out.push(...setDiff("channel_added", "channel_removed", before2.channels, after2.channels));
   if (after2.theme && before2.theme && after2.theme !== before2.theme) out.push({ kind: "theme", item: null, old: before2.theme, new: after2.theme });
   if (after2.name && before2.name && after2.name !== before2.name) out.push({ kind: "name", item: null, old: before2.name, new: after2.name });
