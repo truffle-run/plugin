@@ -19,7 +19,14 @@ You need: **what the user sells**, **who it is for** (category, size, country), 
   - "premium" → `price_min: 50`
   - "no reviews app yet" (selling a reviews app) → `lacks_app_categories: ["reviews"]`
   - "uses Klaviyo" → `has_apps: ["klaviyo"]`
-  - "young stores" → `launched_after: "2024-01-01"`
+  - "young stores" → `opened_after: "2024-01"` (estimated opening month)
+  - "just switched away from Yotpo" → `removed_app: "yotpo"`; "installed Klaviyo this month" → `added_app: "klaviyo"`;
+    any recent change → `changed: [...]` or `sort: "recently_changed"`. `truffle_recent_changes` lists the change log itself.
+  - "companies, not one-person shops" → `entity_type: "company"` (or `legal_form: ["GmbH"]`); "groups with several shops" → `multi_store: true`
+  - "also on Amazon" → `channels: ["amazon"]`; "has a wholesale area" → `pages: ["wholesale"]`; "hiring" → `pages: ["careers"]`
+  - "growing catalogue" → `products_added_90d_min: 20`; "spends on apps" → `app_spend_min: 100`
+  - "micro-influencer-sized brands" → `instagram_followers_min: 1000, instagram_followers_max: 20000` (not every store has a count yet)
+  - "no dropshippers or print-on-demand" → `exclude_fulfilment: ["dropshipping", "print_on_demand"]`
   - category → `category: "jewellery"`; a niche → `subcategory`, e.g. `"streetwear"`, `"rings"`, `"tabletop-rpg"` (stats list them)
   - "vegan streetwear" → `subcategory: "streetwear", signals: ["vegan"]`; also `handmade`, `sustainable`, `personalised`, `made_locally`, `second_hand`
   - "real brands, not resellers" → `business_type: ["own_brand"]`; "B2B shops" → `sells_to: "businesses"`; "premium" → `segment: ["premium", "luxury"]`

@@ -104,7 +104,7 @@ var require_code = __commonJS({
     }
     exports._ = _;
     var plus = new _Code("+");
-    function str(strs, ...args) {
+    function str2(strs, ...args) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
       while (i < args.length) {
@@ -115,7 +115,7 @@ var require_code = __commonJS({
       optimize(expr);
       return new _Code(expr);
     }
-    exports.str = str;
+    exports.str = str2;
     function addCodeArg(code, arg) {
       if (arg instanceof _Code)
         code.push(...arg._items);
@@ -158,7 +158,7 @@ var require_code = __commonJS({
       return;
     }
     function strConcat(c1, c2) {
-      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str`${c1}${c2}`;
+      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str2`${c1}${c2}`;
     }
     exports.strConcat = strConcat;
     function interpolate(x) {
@@ -1120,22 +1120,22 @@ var require_util = __commonJS({
       return (0, codegen_1._)`${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
     }
     exports.schemaRefOrVal = schemaRefOrVal;
-    function unescapeFragment(str) {
-      return unescapeJsonPointer(decodeURIComponent(str));
+    function unescapeFragment(str2) {
+      return unescapeJsonPointer(decodeURIComponent(str2));
     }
     exports.unescapeFragment = unescapeFragment;
-    function escapeFragment(str) {
-      return encodeURIComponent(escapeJsonPointer(str));
+    function escapeFragment(str2) {
+      return encodeURIComponent(escapeJsonPointer(str2));
     }
     exports.escapeFragment = escapeFragment;
-    function escapeJsonPointer(str) {
-      if (typeof str == "number")
-        return `${str}`;
-      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPointer(str2) {
+      if (typeof str2 == "number")
+        return `${str2}`;
+      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
     }
     exports.escapeJsonPointer = escapeJsonPointer;
-    function unescapeJsonPointer(str) {
-      return str.replace(/~1/g, "/").replace(/~0/g, "~");
+    function unescapeJsonPointer(str2) {
+      return str2.replace(/~1/g, "/").replace(/~0/g, "~");
     }
     exports.unescapeJsonPointer = unescapeJsonPointer;
     function eachItem(xs, f) {
@@ -2160,8 +2160,8 @@ var require_json_schema_traverse = __commonJS({
         post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
       }
     }
-    function escapeJsonPtr(str) {
-      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPtr(str2) {
+      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
     }
   }
 });
@@ -3258,10 +3258,10 @@ var require_utils = __commonJS({
         isIPV6: true
       };
     }
-    function findToken(str, token) {
+    function findToken(str2, token) {
       let ind = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === token) ind++;
+      for (let i = 0; i < str2.length; i++) {
+        if (str2[i] === token) ind++;
       }
       return ind;
     }
@@ -4331,7 +4331,7 @@ var require_core = __commonJS({
     var util_1 = require_util();
     var $dataRefSchema = require_data();
     var uri_1 = require_uri();
-    var defaultRegExp = (str, flags) => new RegExp(str, flags);
+    var defaultRegExp = (str2, flags) => new RegExp(str2, flags);
     defaultRegExp.code = "new RegExp";
     var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
     var EXT_SCOPE_NAMES = /* @__PURE__ */ new Set([
@@ -5126,16 +5126,16 @@ var require_ucs2length = __commonJS({
   "../../node_modules/.bun/ajv@8.20.0/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function ucs2length(str) {
-      const len = str.length;
+    function ucs2length(str2) {
+      const len = str2.length;
       let length = 0;
       let pos = 0;
       let value;
       while (pos < len) {
         length++;
-        value = str.charCodeAt(pos++);
+        value = str2.charCodeAt(pos++);
         if (value >= 55296 && value <= 56319 && pos < len) {
-          value = str.charCodeAt(pos);
+          value = str2.charCodeAt(pos);
           if ((value & 64512) === 56320)
             pos++;
         }
@@ -7016,10 +7016,10 @@ var require_formats = __commonJS({
     function isLeapYear(year) {
       return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
     }
-    var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
+    var DATE2 = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
     var DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    function date3(str) {
-      const matches = DATE.exec(str);
+    function date3(str2) {
+      const matches = DATE2.exec(str2);
       if (!matches)
         return false;
       const year = +matches[1];
@@ -7038,8 +7038,8 @@ var require_formats = __commonJS({
     }
     var TIME = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i;
     function getTime(strictTimeZone) {
-      return function time3(str) {
-        const matches = TIME.exec(str);
+      return function time3(str2) {
+        const matches = TIME.exec(str2);
         if (!matches)
           return false;
         const hr = +matches[1];
@@ -7085,8 +7085,8 @@ var require_formats = __commonJS({
     var DATE_TIME_SEPARATOR = /t|\s/i;
     function getDateTime(strictTimeZone) {
       const time3 = getTime(strictTimeZone);
-      return function date_time(str) {
-        const dateTime = str.split(DATE_TIME_SEPARATOR);
+      return function date_time(str2) {
+        const dateTime = str2.split(DATE_TIME_SEPARATOR);
         return dateTime.length === 2 && date3(dateTime[0]) && time3(dateTime[1]);
       };
     }
@@ -7111,13 +7111,13 @@ var require_formats = __commonJS({
     }
     var NOT_URI_FRAGMENT = /\/|:/;
     var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-    function uri(str) {
-      return NOT_URI_FRAGMENT.test(str) && URI.test(str);
+    function uri(str2) {
+      return NOT_URI_FRAGMENT.test(str2) && URI.test(str2);
     }
     var BYTE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gm;
-    function byte(str) {
+    function byte(str2) {
       BYTE.lastIndex = 0;
-      return BYTE.test(str);
+      return BYTE.test(str2);
     }
     var MIN_INT32 = -(2 ** 31);
     var MAX_INT32 = 2 ** 31 - 1;
@@ -7131,11 +7131,11 @@ var require_formats = __commonJS({
       return true;
     }
     var Z_ANCHOR = /[^\\]\\Z/;
-    function regex(str) {
-      if (Z_ANCHOR.test(str))
+    function regex(str2) {
+      if (Z_ANCHOR.test(str2))
         return false;
       try {
-        new RegExp(str);
+        new RegExp(str2);
         return true;
       } catch (e) {
         return false;
@@ -7349,8 +7349,8 @@ var require_parse = __commonJS({
         String.fromCharCode(high >> 10 | 55296, high & 1023 | 56320)
       );
     }
-    function unescapeCSS(str) {
-      return str.replace(reEscape, funescape);
+    function unescapeCSS(str2) {
+      return str2.replace(reEscape, funescape);
     }
     function isQuote(c) {
       return c === 39 || c === 34;
@@ -7763,16 +7763,16 @@ var require_stringify = __commonJS({
     function getNamespace(namespace) {
       return namespace !== null ? "".concat(namespace === "*" ? "*" : escapeName(namespace, charsToEscapeInName), "|") : "";
     }
-    function escapeName(str, charsToEscape) {
+    function escapeName(str2, charsToEscape) {
       var lastIdx = 0;
       var ret = "";
-      for (var i = 0; i < str.length; i++) {
-        if (charsToEscape.has(str.charCodeAt(i))) {
-          ret += "".concat(str.slice(lastIdx, i), "\\").concat(str.charAt(i));
+      for (var i = 0; i < str2.length; i++) {
+        if (charsToEscape.has(str2.charCodeAt(i))) {
+          ret += "".concat(str2.slice(lastIdx, i), "\\").concat(str2.charAt(i));
           lastIdx = i + 1;
         }
       }
-      return ret.length > 0 ? ret + str.slice(lastIdx) : str;
+      return ret.length > 0 ? ret + str2.slice(lastIdx) : str2;
     }
   }
 });
@@ -7906,12 +7906,12 @@ var require_bom_handling = __commonJS({
       this.encoder = encoder;
       this.addBOM = true;
     }
-    PrependBOMWrapper.prototype.write = function(str) {
+    PrependBOMWrapper.prototype.write = function(str2) {
       if (this.addBOM) {
-        str = BOMChar + str;
+        str2 = BOMChar + str2;
         this.addBOM = false;
       }
-      return this.encoder.write(str);
+      return this.encoder.write(str2);
     };
     PrependBOMWrapper.prototype.end = function() {
       return this.encoder.end();
@@ -7993,30 +7993,30 @@ var require_internal = __commonJS({
     function InternalEncoder(options, codec) {
       this.enc = codec.enc;
     }
-    InternalEncoder.prototype.write = function(str) {
-      return Buffer2.from(str, this.enc);
+    InternalEncoder.prototype.write = function(str2) {
+      return Buffer2.from(str2, this.enc);
     };
     InternalEncoder.prototype.end = function() {
     };
     function InternalEncoderBase64(options, codec) {
       this.prevStr = "";
     }
-    InternalEncoderBase64.prototype.write = function(str) {
-      str = this.prevStr + str;
-      var completeQuads = str.length - str.length % 4;
-      this.prevStr = str.slice(completeQuads);
-      str = str.slice(0, completeQuads);
-      return Buffer2.from(str, "base64");
+    InternalEncoderBase64.prototype.write = function(str2) {
+      str2 = this.prevStr + str2;
+      var completeQuads = str2.length - str2.length % 4;
+      this.prevStr = str2.slice(completeQuads);
+      str2 = str2.slice(0, completeQuads);
+      return Buffer2.from(str2, "base64");
     };
     InternalEncoderBase64.prototype.end = function() {
       return Buffer2.from(this.prevStr, "base64");
     };
     function InternalEncoderCesu8(options, codec) {
     }
-    InternalEncoderCesu8.prototype.write = function(str) {
-      var buf = Buffer2.alloc(str.length * 3), bufIdx = 0;
-      for (var i = 0; i < str.length; i++) {
-        var charCode = str.charCodeAt(i);
+    InternalEncoderCesu8.prototype.write = function(str2) {
+      var buf = Buffer2.alloc(str2.length * 3), bufIdx = 0;
+      for (var i = 0; i < str2.length; i++) {
+        var charCode = str2.charCodeAt(i);
         if (charCode < 128)
           buf[bufIdx++] = charCode;
         else if (charCode < 2048) {
@@ -8113,8 +8113,8 @@ var require_utf32 = __commonJS({
       this.isLE = codec.isLE;
       this.highSurrogate = 0;
     }
-    Utf32Encoder.prototype.write = function(str) {
-      var src = Buffer2.from(str, "ucs2");
+    Utf32Encoder.prototype.write = function(str2) {
+      var src = Buffer2.from(str2, "ucs2");
       var dst = Buffer2.alloc(src.length * 2);
       var write32 = this.isLE ? dst.writeUInt32LE : dst.writeUInt32BE;
       var offset = 0;
@@ -8229,8 +8229,8 @@ var require_utf32 = __commonJS({
         options.addBOM = true;
       this.encoder = codec.iconv.getEncoder(options.defaultEncoding || "utf-32le", options);
     }
-    Utf32AutoEncoder.prototype.write = function(str) {
-      return this.encoder.write(str);
+    Utf32AutoEncoder.prototype.write = function(str2) {
+      return this.encoder.write(str2);
     };
     Utf32AutoEncoder.prototype.end = function() {
       return this.encoder.end();
@@ -8324,8 +8324,8 @@ var require_utf16 = __commonJS({
     Utf16BECodec.prototype.bomAware = true;
     function Utf16BEEncoder() {
     }
-    Utf16BEEncoder.prototype.write = function(str) {
-      var buf = Buffer2.from(str, "ucs2");
+    Utf16BEEncoder.prototype.write = function(str2) {
+      var buf = Buffer2.from(str2, "ucs2");
       for (var i = 0; i < buf.length; i += 2) {
         var tmp = buf[i];
         buf[i] = buf[i + 1];
@@ -8370,8 +8370,8 @@ var require_utf16 = __commonJS({
         options.addBOM = true;
       this.encoder = codec.iconv.getEncoder("utf-16le", options);
     }
-    Utf16Encoder.prototype.write = function(str) {
-      return this.encoder.write(str);
+    Utf16Encoder.prototype.write = function(str2) {
+      return this.encoder.write(str2);
     };
     Utf16Encoder.prototype.end = function() {
       return this.encoder.end();
@@ -8462,8 +8462,8 @@ var require_utf7 = __commonJS({
     function Utf7Encoder(options, codec) {
       this.iconv = codec.iconv;
     }
-    Utf7Encoder.prototype.write = function(str) {
-      return Buffer2.from(str.replace(nonDirectChars, function(chunk) {
+    Utf7Encoder.prototype.write = function(str2) {
+      return Buffer2.from(str2.replace(nonDirectChars, function(chunk) {
         return "+" + (chunk === "+" ? "" : this.iconv.encode(chunk, "utf16-be").toString("base64").replace(/=+$/, "")) + "-";
       }.bind(this)));
     };
@@ -8541,10 +8541,10 @@ var require_utf7 = __commonJS({
       this.base64Accum = Buffer2.alloc(6);
       this.base64AccumIdx = 0;
     }
-    Utf7IMAPEncoder.prototype.write = function(str) {
-      var inBase64 = this.inBase64, base64Accum = this.base64Accum, base64AccumIdx = this.base64AccumIdx, buf = Buffer2.alloc(str.length * 5 + 10), bufIdx = 0;
-      for (var i2 = 0; i2 < str.length; i2++) {
-        var uChar = str.charCodeAt(i2);
+    Utf7IMAPEncoder.prototype.write = function(str2) {
+      var inBase64 = this.inBase64, base64Accum = this.base64Accum, base64AccumIdx = this.base64AccumIdx, buf = Buffer2.alloc(str2.length * 5 + 10), bufIdx = 0;
+      for (var i2 = 0; i2 < str2.length; i2++) {
+        var uChar = str2.charCodeAt(i2);
         if (32 <= uChar && uChar <= 126) {
           if (inBase64) {
             if (base64AccumIdx > 0) {
@@ -8674,10 +8674,10 @@ var require_sbcs_codec = __commonJS({
     function SBCSEncoder(options, codec) {
       this.encodeBuf = codec.encodeBuf;
     }
-    SBCSEncoder.prototype.write = function(str) {
-      var buf = Buffer2.alloc(str.length);
-      for (var i = 0; i < str.length; i++)
-        buf[i] = this.encodeBuf[str.charCodeAt(i)];
+    SBCSEncoder.prototype.write = function(str2) {
+      var buf = Buffer2.alloc(str2.length);
+      for (var i = 0; i < str2.length; i++)
+        buf[i] = this.encodeBuf[str2.charCodeAt(i)];
       return buf;
     };
     SBCSEncoder.prototype.end = function() {
@@ -9525,12 +9525,12 @@ var require_dbcs_codec = __commonJS({
       this.defaultCharSingleByte = codec.defCharSB;
       this.gb18030 = codec.gb18030;
     }
-    DBCSEncoder.prototype.write = function(str) {
-      var newBuf = Buffer2.alloc(str.length * (this.gb18030 ? 4 : 3)), leadSurrogate = this.leadSurrogate, seqObj = this.seqObj, nextChar = -1, i2 = 0, j = 0;
+    DBCSEncoder.prototype.write = function(str2) {
+      var newBuf = Buffer2.alloc(str2.length * (this.gb18030 ? 4 : 3)), leadSurrogate = this.leadSurrogate, seqObj = this.seqObj, nextChar = -1, i2 = 0, j = 0;
       while (true) {
         if (nextChar === -1) {
-          if (i2 == str.length) break;
-          var uCode = str.charCodeAt(i2++);
+          if (i2 == str2.length) break;
+          var uCode = str2.charCodeAt(i2++);
         } else {
           var uCode = nextChar;
           nextChar = -1;
@@ -11354,14 +11354,14 @@ var require_lib = __commonJS({
     iconv2.encodings = null;
     iconv2.defaultCharUnicode = "\uFFFD";
     iconv2.defaultCharSingleByte = "?";
-    iconv2.encode = function encode(str, encoding, options) {
-      str = "" + (str || "");
+    iconv2.encode = function encode(str2, encoding, options) {
+      str2 = "" + (str2 || "");
       var encoder = iconv2.getEncoder(encoding, options);
-      var res = encoder.write(str);
+      var res = encoder.write(str2);
       var trail = encoder.end();
       return trail && trail.length > 0 ? Buffer2.concat([res, trail]) : res;
     };
-    iconv2.decode = function decode(buf, encoding, options) {
+    iconv2.decode = function decode2(buf, encoding, options) {
       if (typeof buf === "string") {
         if (!iconv2.skipDecodeWarning) {
           console.error("Iconv-lite warning: decode()-ing strings is deprecated. Refer to https://github.com/ashtuchkin/iconv-lite/wiki/Use-Buffers-when-decoding");
@@ -14187,11 +14187,11 @@ var require_request = __commonJS({
           } else if (typeof val2[i] === "object") {
             throw new InvalidArgumentError(`invalid ${key} header`);
           } else {
-            const str = `${val2[i]}`;
-            if (!isValidHeaderValue(str)) {
+            const str2 = `${val2[i]}`;
+            if (!isValidHeaderValue(str2)) {
               throw new InvalidArgumentError(`invalid ${key} header`);
             }
-            arr.push(str);
+            arr.push(str2);
           }
         }
         val2 = arr;
@@ -15734,8 +15734,8 @@ var require_infra = __commonJS({
     }
     var ASCII_WHITESPACE_REPLACE_REGEX = /[\u0009\u000A\u000C\u000D\u0020]/g;
     var nonASCIIRegex = /[^\x00-\x7F]/;
-    function asciiLowercase(str) {
-      return nonASCIIRegex.test(str) ? str.replace(/[A-Z]+/g, (upper) => upper.toLowerCase()) : str.toLowerCase();
+    function asciiLowercase(str2) {
+      return nonASCIIRegex.test(str2) ? str2.replace(/[A-Z]+/g, (upper) => upper.toLowerCase()) : str2.toLowerCase();
     }
     function forgivingBase64(data2) {
       data2 = data2.replace(ASCII_WHITESPACE_REPLACE_REGEX, "");
@@ -15788,19 +15788,19 @@ var require_infra = __commonJS({
     function parseJSONFromBytes(bytes) {
       return JSON.parse(utf8DecodeBytes(bytes));
     }
-    function removeASCIIWhitespace(str, leading = true, trailing = true) {
-      return removeChars(str, leading, trailing, isASCIIWhitespace);
+    function removeASCIIWhitespace(str2, leading = true, trailing = true) {
+      return removeChars(str2, leading, trailing, isASCIIWhitespace);
     }
-    function removeChars(str, leading, trailing, predicate) {
+    function removeChars(str2, leading, trailing, predicate) {
       let lead = 0;
-      let trail = str.length - 1;
+      let trail = str2.length - 1;
       if (leading) {
-        while (lead < str.length && predicate(str.charCodeAt(lead))) lead++;
+        while (lead < str2.length && predicate(str2.charCodeAt(lead))) lead++;
       }
       if (trailing) {
-        while (trail > 0 && predicate(str.charCodeAt(trail))) trail--;
+        while (trail > 0 && predicate(str2.charCodeAt(trail))) trail--;
       }
-      return lead === 0 && trail === str.length - 1 ? str : str.slice(lead, trail + 1);
+      return lead === 0 && trail === str2.length - 1 ? str2 : str2.slice(lead, trail + 1);
     }
     function serializeJavascriptValueToJSONString(value) {
       const result = JSON.stringify(value);
@@ -16052,8 +16052,8 @@ var require_data_url = __commonJS({
     function isHTTPWhiteSpace(char) {
       return char === 13 || char === 10 || char === 9 || char === 32;
     }
-    function removeHTTPWhitespace(str, leading = true, trailing = true) {
-      return removeChars(str, leading, trailing, isHTTPWhiteSpace);
+    function removeHTTPWhitespace(str2, leading = true, trailing = true) {
+      return removeChars(str2, leading, trailing, isHTTPWhiteSpace);
     }
     function minimizeSupportedMimeType(mimeType) {
       switch (mimeType.essence) {
@@ -18174,7 +18174,7 @@ var require_body = __commonJS({
         const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
-        const formdataEscape = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
+        const formdataEscape = (str2) => str2.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
         const normalizeLinefeeds = (value) => value.replace(/\r?\n|\r/g, "\r\n");
         const blobParts = [];
         const rn = new Uint8Array([13, 10]);
@@ -35204,9 +35204,9 @@ var require_cookies = __commonJS({
       webidl.argumentLengthCheck(arguments, 2, "setCookie");
       brandChecks(headers2);
       cookie = webidl.converters.Cookie(cookie);
-      const str = stringify2(cookie);
-      if (str) {
-        headers2.append("set-cookie", str, true);
+      const str2 = stringify2(cookie);
+      if (str2) {
+        headers2.append("set-cookie", str2, true);
       }
     }
     webidl.converters.DeleteCookieAttributes = webidl.dictionaryConverter([
@@ -35716,8 +35716,8 @@ var require_util6 = __commonJS({
           return false;
         }
       }
-      const num = Number.parseInt(value, 10);
-      return num >= 8 && num <= 15;
+      const num2 = Number.parseInt(value, 10);
+      return num2 >= 8 && num2 <= 15;
     }
     function getURLRecord(url, baseURL) {
       let urlRecord;
@@ -43240,14 +43240,14 @@ function promiseAllObject(promisesObj) {
 }
 function randomString(length = 10) {
   const chars = "abcdefghijklmnopqrstuvwxyz";
-  let str = "";
+  let str2 = "";
   for (let i = 0; i < length; i++) {
-    str += chars[Math.floor(Math.random() * chars.length)];
+    str2 += chars[Math.floor(Math.random() * chars.length)];
   }
-  return str;
+  return str2;
 }
-function esc(str) {
-  return JSON.stringify(str);
+function esc(str2) {
+  return JSON.stringify(str2);
 }
 var captureStackTrace = Error.captureStackTrace ? Error.captureStackTrace : (..._args) => {
 };
@@ -43335,8 +43335,8 @@ var getParsedType2 = (data2) => {
 };
 var propertyKeyTypes = /* @__PURE__ */ new Set(["string", "number", "symbol"]);
 var primitiveTypes = /* @__PURE__ */ new Set(["string", "number", "bigint", "boolean", "symbol", "undefined"]);
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function escapeRegex(str2) {
+  return str2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function clone(inst, def, params) {
   const cl = new inst._zod.constr(def ?? inst._zod.def);
@@ -53297,86 +53297,92 @@ var StdioServerTransport = class {
 // ../core/src/apps.ts
 var APP_CATALOGUE = [
   // Reviews
-  { id: "judgeme", name: "Judge.me", category: "reviews", patterns: [/judge\.me/i, /judgeme/i] },
-  { id: "yotpo", name: "Yotpo", category: "reviews", patterns: [/yotpo\.com/i] },
-  { id: "loox", name: "Loox", category: "reviews", patterns: [/loox\.io/i] },
-  { id: "stamped", name: "Stamped", category: "reviews", patterns: [/stamped\.io/i] },
-  { id: "okendo", name: "Okendo", category: "reviews", patterns: [/okendo\.io/i] },
-  { id: "reviewsio", name: "REVIEWS.io", category: "reviews", patterns: [/reviews\.io/i, /reviews\.co\.uk/i] },
-  { id: "trustpilot", name: "Trustpilot", category: "reviews", patterns: [/widget\.trustpilot\.com/i] },
-  { id: "shopify_product_reviews", name: "Shopify Product Reviews", category: "reviews", patterns: [/productreviews\.shopifycdn\.com/i] },
+  { id: "judgeme", name: "Judge.me", price: 15, category: "reviews", patterns: [/judge\.me/i, /judgeme/i] },
+  { id: "yotpo", name: "Yotpo", price: 79, category: "reviews", patterns: [/yotpo\.com/i] },
+  { id: "loox", name: "Loox", price: 13, category: "reviews", patterns: [/loox\.io/i] },
+  { id: "stamped", name: "Stamped", price: 23, category: "reviews", patterns: [/stamped\.io/i] },
+  { id: "okendo", name: "Okendo", price: 19, category: "reviews", patterns: [/okendo\.io/i] },
+  { id: "reviewsio", name: "REVIEWS.io", price: 49, category: "reviews", patterns: [/reviews\.io/i, /reviews\.co\.uk/i] },
+  { id: "trustpilot", name: "Trustpilot", price: 0, category: "reviews", patterns: [/widget\.trustpilot\.com/i] },
+  { id: "shopify_product_reviews", name: "Shopify Product Reviews", price: 0, category: "reviews", patterns: [/productreviews\.shopifycdn\.com/i] },
   // Trust (Germany)
-  { id: "trusted_shops", name: "Trusted Shops", category: "trust", patterns: [/trustedshops\.(com|de)/i, /etrusted\.com/i] },
+  { id: "trusted_shops", name: "Trusted Shops", price: 60, category: "trust", patterns: [/trustedshops\.(com|de)/i, /etrusted\.com/i] },
   // Email / SMS
-  { id: "klaviyo", name: "Klaviyo", category: "email_sms", patterns: [/klaviyo\.com/i] },
-  { id: "omnisend", name: "Omnisend", category: "email_sms", patterns: [/omnisnippet|omnisend\.com|omnisrc\.com/i] },
-  { id: "mailchimp", name: "Mailchimp", category: "email_sms", patterns: [/chimpstatic\.com|list-manage\.com/i] },
-  { id: "privy", name: "Privy", category: "email_sms", patterns: [/privy\.com/i] },
-  { id: "rule", name: "Rule", category: "email_sms", patterns: [/rule\.io/i] },
-  { id: "brevo", name: "Brevo", category: "email_sms", patterns: [/sendinblue\.com|brevo\.com|sibforms\.com/i] },
-  { id: "postscript", name: "Postscript", category: "email_sms", patterns: [/postscript\.io/i] },
+  { id: "klaviyo", name: "Klaviyo", price: 45, category: "email_sms", patterns: [/klaviyo\.com/i] },
+  { id: "omnisend", name: "Omnisend", price: 16, category: "email_sms", patterns: [/omnisnippet|omnisend\.com|omnisrc\.com/i] },
+  { id: "mailchimp", name: "Mailchimp", price: 13, category: "email_sms", patterns: [/chimpstatic\.com|list-manage\.com/i] },
+  { id: "privy", name: "Privy", price: 30, category: "email_sms", patterns: [/privy\.com/i] },
+  { id: "rule", name: "Rule", price: 30, category: "email_sms", patterns: [/rule\.io/i] },
+  { id: "brevo", name: "Brevo", price: 9, category: "email_sms", patterns: [/sendinblue\.com|brevo\.com|sibforms\.com/i] },
+  { id: "postscript", name: "Postscript", price: 25, category: "email_sms", patterns: [/postscript\.io/i] },
   // Chat / support
-  { id: "gorgias", name: "Gorgias", category: "chat_support", patterns: [/gorgias\.(chat|io)/i] },
-  { id: "tidio", name: "Tidio", category: "chat_support", patterns: [/tidio(chat)?\.co/i] },
-  { id: "zendesk", name: "Zendesk", category: "chat_support", patterns: [/zdassets\.com|zendesk\.com/i] },
-  { id: "intercom", name: "Intercom", category: "chat_support", patterns: [/intercom(cdn)?\.(io|com)/i] },
-  { id: "shopify_inbox", name: "Shopify Inbox", category: "chat_support", patterns: [/shopify-chat|inbox\.shopify|shopifychat/i] },
-  { id: "richpanel", name: "Richpanel", category: "chat_support", patterns: [/richpanel\.com/i] },
+  { id: "gorgias", name: "Gorgias", price: 60, category: "chat_support", patterns: [/gorgias\.(chat|io)/i] },
+  { id: "tidio", name: "Tidio", price: 29, category: "chat_support", patterns: [/tidio(chat)?\.co/i] },
+  { id: "zendesk", name: "Zendesk", price: 55, category: "chat_support", patterns: [/zdassets\.com|zendesk\.com/i] },
+  { id: "intercom", name: "Intercom", price: 74, category: "chat_support", patterns: [/intercom(cdn)?\.(io|com)/i] },
+  { id: "shopify_inbox", name: "Shopify Inbox", price: 0, category: "chat_support", patterns: [/shopify-chat|inbox\.shopify|shopifychat/i] },
+  { id: "richpanel", name: "Richpanel", price: 89, category: "chat_support", patterns: [/richpanel\.com/i] },
   // Analytics
-  { id: "google_analytics", name: "Google Analytics", category: "analytics", patterns: [/googletagmanager\.com\/gtag|google-analytics\.com/i] },
-  { id: "google_tag_manager", name: "Google Tag Manager", category: "analytics", patterns: [/googletagmanager\.com\/gtm\.js/i] },
-  { id: "hotjar", name: "Hotjar", category: "analytics", patterns: [/hotjar\.com/i] },
-  { id: "clarity", name: "Microsoft Clarity", category: "analytics", patterns: [/clarity\.ms/i] },
-  { id: "lucky_orange", name: "Lucky Orange", category: "analytics", patterns: [/luckyorange\.(com|net)/i] },
-  { id: "triplewhale", name: "Triple Whale", category: "analytics", patterns: [/triplewhale|triplepixel/i] },
+  { id: "google_analytics", name: "Google Analytics", price: 0, category: "analytics", patterns: [/googletagmanager\.com\/gtag|google-analytics\.com/i] },
+  { id: "google_tag_manager", name: "Google Tag Manager", price: 0, category: "analytics", patterns: [/googletagmanager\.com\/gtm\.js/i] },
+  { id: "hotjar", name: "Hotjar", price: 39, category: "analytics", patterns: [/hotjar\.com/i] },
+  { id: "clarity", name: "Microsoft Clarity", price: 0, category: "analytics", patterns: [/clarity\.ms/i] },
+  { id: "lucky_orange", name: "Lucky Orange", price: 39, category: "analytics", patterns: [/luckyorange\.(com|net)/i] },
+  { id: "triplewhale", name: "Triple Whale", price: 129, category: "analytics", patterns: [/triplewhale|triplepixel/i] },
   // Ad pixels
-  { id: "meta_pixel", name: "Meta Pixel", category: "ads_pixel", patterns: [/connect\.facebook\.net/i] },
-  { id: "tiktok_pixel", name: "TikTok Pixel", category: "ads_pixel", patterns: [/analytics\.tiktok\.com/i] },
-  { id: "pinterest_tag", name: "Pinterest Tag", category: "ads_pixel", patterns: [/s\.pinimg\.com\/ct/i] },
-  { id: "snap_pixel", name: "Snap Pixel", category: "ads_pixel", patterns: [/sc-static\.net/i] },
-  { id: "google_ads", name: "Google Ads", category: "ads_pixel", patterns: [/googleadservices\.com|AW-\d{6,}/i] },
+  { id: "meta_pixel", name: "Meta Pixel", price: 0, category: "ads_pixel", patterns: [/connect\.facebook\.net/i] },
+  { id: "tiktok_pixel", name: "TikTok Pixel", price: 0, category: "ads_pixel", patterns: [/analytics\.tiktok\.com/i] },
+  { id: "pinterest_tag", name: "Pinterest Tag", price: 0, category: "ads_pixel", patterns: [/s\.pinimg\.com\/ct/i] },
+  { id: "snap_pixel", name: "Snap Pixel", price: 0, category: "ads_pixel", patterns: [/sc-static\.net/i] },
+  { id: "google_ads", name: "Google Ads", price: 0, category: "ads_pixel", patterns: [/googleadservices\.com|AW-\d{6,}/i] },
   // Subscriptions
-  { id: "recharge", name: "Recharge", category: "subscriptions", patterns: [/rechargecdn\.com|rechargepayments\.com|rechargeapps\.com/i] },
-  { id: "skio", name: "Skio", category: "subscriptions", patterns: [/skio\.com/i] },
-  { id: "seal_subscriptions", name: "Seal Subscriptions", category: "subscriptions", patterns: [/sealsubscriptions\.com/i] },
-  { id: "appstle", name: "Appstle Subscriptions", category: "subscriptions", patterns: [/appstle/i] },
+  { id: "recharge", name: "Recharge", price: 99, category: "subscriptions", patterns: [/rechargecdn\.com|rechargepayments\.com|rechargeapps\.com/i] },
+  { id: "skio", name: "Skio", price: 599, category: "subscriptions", patterns: [/skio\.com/i] },
+  { id: "seal_subscriptions", name: "Seal Subscriptions", price: 7, category: "subscriptions", patterns: [/sealsubscriptions\.com/i] },
+  { id: "appstle", name: "Appstle Subscriptions", price: 10, category: "subscriptions", patterns: [/appstle/i] },
   // Loyalty
-  { id: "smile", name: "Smile.io", category: "loyalty", patterns: [/smile\.io|sweettooth\.io/i] },
-  { id: "loyaltylion", name: "LoyaltyLion", category: "loyalty", patterns: [/loyaltylion\.(com|net)/i] },
-  { id: "yotpo_loyalty", name: "Yotpo Loyalty", category: "loyalty", patterns: [/swellrewards\.com/i] },
+  { id: "smile", name: "Smile.io", price: 49, category: "loyalty", patterns: [/smile\.io|sweettooth\.io/i] },
+  { id: "loyaltylion", name: "LoyaltyLion", price: 199, category: "loyalty", patterns: [/loyaltylion\.(com|net)/i] },
+  { id: "yotpo_loyalty", name: "Yotpo Loyalty", price: 199, category: "loyalty", patterns: [/swellrewards\.com/i] },
   // Consent (GDPR)
-  { id: "cookiebot", name: "Cookiebot", category: "consent", patterns: [/cookiebot\.com/i] },
-  { id: "usercentrics", name: "Usercentrics", category: "consent", patterns: [/usercentrics\.(eu|com)/i] },
-  { id: "consentmo", name: "Consentmo", category: "consent", patterns: [/consentmo|gdpr-legal-cookie|beeclever/i] },
-  { id: "onetrust", name: "OneTrust", category: "consent", patterns: [/onetrust\.com|cookielaw\.org/i] },
-  { id: "pandectes", name: "Pandectes GDPR", category: "consent", patterns: [/pandectes/i] },
+  { id: "cookiebot", name: "Cookiebot", price: 15, category: "consent", patterns: [/cookiebot\.com/i] },
+  { id: "usercentrics", name: "Usercentrics", price: 12, category: "consent", patterns: [/usercentrics\.(eu|com)/i] },
+  { id: "consentmo", name: "Consentmo", price: 10, category: "consent", patterns: [/consentmo|gdpr-legal-cookie|beeclever/i] },
+  { id: "onetrust", name: "OneTrust", price: 0, category: "consent", patterns: [/onetrust\.com|cookielaw\.org/i] },
+  { id: "pandectes", name: "Pandectes GDPR", price: 9, category: "consent", patterns: [/pandectes/i] },
   // Payments
-  { id: "klarna", name: "Klarna", category: "payments", patterns: [/klarna(cdn|services)?\.(com|net)/i] },
-  { id: "paypal", name: "PayPal", category: "payments", patterns: [/paypal\.com\/sdk|paypalobjects\.com/i] },
-  { id: "afterpay", name: "Afterpay", category: "payments", patterns: [/afterpay\.com|static\.afterpay/i] },
+  { id: "klarna", name: "Klarna", price: 0, category: "payments", patterns: [/klarna(cdn|services)?\.(com|net)/i] },
+  { id: "paypal", name: "PayPal", price: 0, category: "payments", patterns: [/paypal\.com\/sdk|paypalobjects\.com/i] },
+  { id: "afterpay", name: "Afterpay", price: 0, category: "payments", patterns: [/afterpay\.com|static\.afterpay/i] },
   // Page builders
-  { id: "pagefly", name: "PageFly", category: "page_builder", patterns: [/pagefly/i] },
-  { id: "gempages", name: "GemPages", category: "page_builder", patterns: [/gempages/i] },
-  { id: "shogun", name: "Shogun", category: "page_builder", patterns: [/getshogun\.com|shogun-frontend/i] },
-  { id: "replo", name: "Replo", category: "page_builder", patterns: [/replo\.app/i] },
+  { id: "pagefly", name: "PageFly", price: 24, category: "page_builder", patterns: [/pagefly/i] },
+  { id: "gempages", name: "GemPages", price: 29, category: "page_builder", patterns: [/gempages/i] },
+  { id: "shogun", name: "Shogun", price: 39, category: "page_builder", patterns: [/getshogun\.com|shogun-frontend/i] },
+  { id: "replo", name: "Replo", price: 99, category: "page_builder", patterns: [/replo\.app/i] },
   // Translation
-  { id: "weglot", name: "Weglot", category: "translation", patterns: [/weglot\.com/i] },
-  { id: "langify", name: "Langify", category: "translation", patterns: [/langify/i] },
-  { id: "transcy", name: "Transcy", category: "translation", patterns: [/transcy/i] },
+  { id: "weglot", name: "Weglot", price: 15, category: "translation", patterns: [/weglot\.com/i] },
+  { id: "langify", name: "Langify", price: 18, category: "translation", patterns: [/langify/i] },
+  { id: "transcy", name: "Transcy", price: 12, category: "translation", patterns: [/transcy/i] },
   // Upsell / merchandising
-  { id: "rebuy", name: "Rebuy", category: "upsell", patterns: [/rebuyengine\.com/i] },
-  { id: "bold", name: "Bold Commerce", category: "upsell", patterns: [/boldapps\.net|boldcommerce\.com/i] },
-  { id: "vitals", name: "Vitals", category: "upsell", patterns: [/vitals\.co|appsolve\.io/i] },
-  { id: "frequently_bought", name: "Frequently Bought Together", category: "upsell", patterns: [/codeblackbelt/i] },
-  { id: "searchanise", name: "Searchanise", category: "upsell", patterns: [/searchanise/i] },
-  { id: "boost_commerce", name: "Boost AI Search & Filter", category: "upsell", patterns: [/boostcommerce|bc-sf-filter/i] },
+  { id: "rebuy", name: "Rebuy", price: 99, category: "upsell", patterns: [/rebuyengine\.com/i] },
+  { id: "bold", name: "Bold Commerce", price: 20, category: "upsell", patterns: [/boldapps\.net|boldcommerce\.com/i] },
+  { id: "vitals", name: "Vitals", price: 30, category: "upsell", patterns: [/vitals\.co|appsolve\.io/i] },
+  { id: "frequently_bought", name: "Frequently Bought Together", price: 10, category: "upsell", patterns: [/codeblackbelt/i] },
+  { id: "searchanise", name: "Searchanise", price: 19, category: "upsell", patterns: [/searchanise/i] },
+  { id: "boost_commerce", name: "Boost AI Search & Filter", price: 29, category: "upsell", patterns: [/boostcommerce|bc-sf-filter/i] },
   // Shipping
-  { id: "sendcloud", name: "Sendcloud", category: "shipping", patterns: [/sendcloud/i] },
-  { id: "aftership", name: "AfterShip", category: "shipping", patterns: [/aftership\.com/i] },
-  { id: "parcelpanel", name: "ParcelPanel", category: "shipping", patterns: [/parcelpanel/i] },
+  { id: "sendcloud", name: "Sendcloud", price: 25, category: "shipping", patterns: [/sendcloud/i] },
+  { id: "aftership", name: "AfterShip", price: 11, category: "shipping", patterns: [/aftership\.com/i] },
+  { id: "parcelpanel", name: "ParcelPanel", price: 9, category: "shipping", patterns: [/parcelpanel/i] },
   // Social / UGC
-  { id: "instafeed", name: "Instafeed", category: "social", patterns: [/instafeed/i] },
-  { id: "elfsight", name: "Elfsight", category: "social", patterns: [/elfsight/i] }
+  { id: "instafeed", name: "Instafeed", price: 4, category: "social", patterns: [/instafeed/i] },
+  { id: "elfsight", name: "Elfsight", price: 6, category: "social", patterns: [/elfsight/i] },
+  // Print on demand / personalisation (their storefront scripts show the store prints to order)
+  { id: "printful", name: "Printful", price: 0, category: "print_on_demand", patterns: [/printful\.com/i] },
+  { id: "printify", name: "Printify", price: 0, category: "print_on_demand", patterns: [/printify\.com/i] },
+  { id: "gelato", name: "Gelato", price: 0, category: "print_on_demand", patterns: [/gelato(apis)?\.com/i] },
+  { id: "teeinblue", name: "Teeinblue", price: 0, category: "print_on_demand", patterns: [/teeinblue/i] },
+  { id: "customily", name: "Customily", price: 49, category: "print_on_demand", patterns: [/customily/i] }
 ];
 var APP_IDS = APP_CATALOGUE.map((a) => a.id);
 function detectApps(scriptSources, inlineScripts) {
@@ -53387,6 +53393,11 @@ ${inlineScripts}`;
     if (app.patterns.some((p) => p.test(haystack))) found.add(app.id);
   }
   return [...found].sort();
+}
+function appSpend(ids) {
+  let sum = 0;
+  for (const id of ids) sum += APP_CATALOGUE.find((a) => a.id === id)?.price ?? 0;
+  return sum;
 }
 
 // ../core/src/config.ts
@@ -53484,7 +53495,7 @@ function bareHost(host) {
 }
 
 // ../core/src/db.ts
-var JSON_COLS = ["ships_to", "product_types", "top_tags", "apps", "socials", "signals"];
+var JSON_COLS = ["ships_to", "product_types", "top_tags", "apps", "socials", "signals", "channels", "carriers", "pages"];
 var SCHEMA = `
 CREATE TABLE IF NOT EXISTS stores (
   domain TEXT PRIMARY KEY,
@@ -53534,6 +53545,17 @@ CREATE TABLE IF NOT EXISTS meta (
   key TEXT PRIMARY KEY,
   value TEXT
 );
+-- What changed between two checks of a store (history.ts). Only written for stores already indexed.
+CREATE TABLE IF NOT EXISTS store_changes (
+  domain TEXT NOT NULL,
+  at TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  item TEXT,
+  old TEXT,
+  new TEXT
+);
+CREATE INDEX IF NOT EXISTS store_changes_at ON store_changes(at);
+CREATE INDEX IF NOT EXISTS store_changes_domain ON store_changes(domain, at);
 `;
 var shared = null;
 function openDb(file = dbPath(), { create = true } = {}) {
@@ -53565,14 +53587,72 @@ function migrate(db) {
     ["audience", "TEXT"],
     ["signals", "TEXT NOT NULL DEFAULT '[]'"],
     ["labels_hash", "TEXT"],
-    ["labelled_at", "TEXT"]
+    ["labelled_at", "TEXT"],
+    // 2026-11: age, activity, company, channels and reach.
+    ["first_seen_at", "TEXT"],
+    // first time Truffle confirmed the store
+    ["shop_id", "INTEGER"],
+    // Shopify's numeric shop id (sequential: higher = newer)
+    ["oldest_product_at", "TEXT"],
+    // date of the oldest published product
+    ["opened_est", "TEXT"],
+    // estimated opening month YYYY-MM (seed derive: shop id calibrated on oldest products)
+    ["products_30d", "INTEGER"],
+    // products published in the last 30 / 90 days (capped at the 250-product sample)
+    ["products_90d", "INTEGER"],
+    ["app_spend", "INTEGER"],
+    // estimated EUR/month on detected paid apps (apps.ts prices)
+    ["company_name", "TEXT"],
+    // from the Impressum, companies only (never for individuals)
+    ["legal_form", "TEXT"],
+    // GmbH, UG (haftungsbeschränkt), AG …
+    ["vat_id", "TEXT"],
+    ["register_id", "TEXT"],
+    // court + HRB/HRA number
+    ["owner_key", "TEXT"],
+    // VAT id or register id: stores sharing it belong to one company
+    ["owner_stores", "INTEGER"],
+    // how many indexed stores share owner_key (seed derive)
+    ["channels", "TEXT NOT NULL DEFAULT '[]'"],
+    // marketplaces linked from the store
+    ["carriers", "TEXT NOT NULL DEFAULT '[]'"],
+    ["pages", "TEXT NOT NULL DEFAULT '[]'"],
+    // wholesale, careers, store_locator …
+    ["fulfilment", "TEXT"],
+    // print_on_demand | dropshipping | null
+    ["reviews_count", "INTEGER"],
+    ["reviews_rating", "REAL"],
+    ["reviews_source", "TEXT"],
+    ["instagram_followers", "INTEGER"],
+    ["instagram_posts", "INTEGER"],
+    ["instagram_last_post_at", "TEXT"],
+    ["instagram_checked_at", "TEXT"]
   ];
   for (const [name, type] of add2) if (!have.has(name)) db.exec(`ALTER TABLE stores ADD COLUMN ${name} ${type}`);
+  if (!have.has("first_seen_at")) {
+    db.exec(`UPDATE stores SET first_seen_at = coalesce((SELECT checked_at FROM candidates c WHERE c.host = stores.domain), last_seen_at, last_checked_at)`);
+  }
   db.exec("CREATE INDEX IF NOT EXISTS stores_category ON stores(category)");
+  db.exec("CREATE INDEX IF NOT EXISTS stores_owner ON stores(owner_key) WHERE owner_key IS NOT NULL");
 }
 function getDb() {
   shared ??= openDb();
   return shared;
+}
+function decode(row2) {
+  const out = { ...row2 };
+  for (const c of JSON_COLS) {
+    try {
+      out[c] = JSON.parse(String(row2[c] ?? (c === "socials" ? "{}" : "[]")));
+    } catch {
+      out[c] = c === "socials" ? {} : [];
+    }
+  }
+  return out;
+}
+function getStore(db, domain) {
+  const row2 = db.prepare("SELECT * FROM stores WHERE domain = ? OR domain = ? OR domain = ?").get(domain, bareHost(domain), `www.${bareHost(domain)}`);
+  return row2 ? decode(row2) : null;
 }
 function upsertStore(db, s) {
   const fields = Object.keys(s).filter((k) => s[k] !== void 0);
@@ -53663,6 +53743,77 @@ function mergeIndex(target, source) {
   } finally {
     db.close();
   }
+}
+
+// ../core/src/history.ts
+var CHANGE_KINDS = ["status", "app_added", "app_removed", "theme", "name", "products", "price", "channel_added", "channel_removed", "legal_form", "followers"];
+var str = (v) => v == null ? null : String(v);
+function setDiff(kindAdded, kindRemoved, before2, after2) {
+  if (!before2 || !after2) return [];
+  const b = new Set(before2);
+  const a = new Set(after2);
+  return [
+    ...[...a].filter((x) => !b.has(x)).map((item) => ({ kind: kindAdded, item, old: null, new: null })),
+    ...[...b].filter((x) => !a.has(x)).map((item) => ({ kind: kindRemoved, item, old: null, new: null }))
+  ];
+}
+function diffStore(before2, after2) {
+  const out = [];
+  if (after2.status && after2.status !== before2.status) out.push({ kind: "status", item: null, old: before2.status, new: after2.status });
+  if (before2.status !== "active" || (after2.status ?? before2.status) !== "active") return out;
+  out.push(...setDiff("app_added", "app_removed", before2.apps, after2.apps));
+  out.push(...setDiff("channel_added", "channel_removed", before2.channels, after2.channels));
+  if (after2.theme && before2.theme && after2.theme !== before2.theme) out.push({ kind: "theme", item: null, old: before2.theme, new: after2.theme });
+  if (after2.name && before2.name && after2.name !== before2.name) out.push({ kind: "name", item: null, old: before2.name, new: after2.name });
+  const pb = before2.product_count;
+  const pa = after2.product_count;
+  if (pb != null && pa != null && Math.abs(pa - pb) >= Math.max(10, pb * 0.1)) out.push({ kind: "products", item: null, old: str(pb), new: str(pa) });
+  const mb = before2.price_median;
+  const ma = after2.price_median;
+  if (mb && ma && Math.abs(ma - mb) / mb >= 0.15) out.push({ kind: "price", item: null, old: str(mb), new: str(ma) });
+  if (after2.legal_form && before2.legal_form && after2.legal_form !== before2.legal_form) out.push({ kind: "legal_form", item: null, old: before2.legal_form, new: after2.legal_form });
+  const fb = before2.instagram_followers;
+  const fa = after2.instagram_followers;
+  if (fb != null && fa != null && Math.abs(fa - fb) >= Math.max(50, fb * 0.05)) out.push({ kind: "followers", item: "instagram", old: str(fb), new: str(fa) });
+  return out;
+}
+function upsertTracked(db, row2, at = (/* @__PURE__ */ new Date()).toISOString()) {
+  const before2 = getStore(db, row2.domain);
+  if (!before2 || before2.domain !== row2.domain) {
+    upsertStore(db, { ...row2, first_seen_at: row2.first_seen_at ?? at });
+    return [];
+  }
+  const changes = diffStore(before2, row2);
+  if (changes.length) {
+    const ins = db.prepare("INSERT INTO store_changes (domain, at, kind, item, old, new) VALUES (?, ?, ?, ?, ?, ?)");
+    for (const c of changes) ins.run(row2.domain, at, c.kind, c.item, c.old, c.new);
+  }
+  upsertStore(db, row2);
+  return changes;
+}
+function listChanges(db, q) {
+  const where = ["c.at >= ?"];
+  const args = [q.since ?? new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)];
+  if (q.kind?.length) {
+    where.push(`c.kind IN (${q.kind.map(() => "?").join(",")})`);
+    args.push(...q.kind);
+  }
+  if (q.item) {
+    where.push("c.item = ?");
+    args.push(q.item);
+  }
+  if (q.domain) {
+    where.push("c.domain = ?");
+    args.push(q.domain);
+  }
+  const w = where.join(" AND ");
+  const total = db.prepare(`SELECT count(*) n FROM store_changes c WHERE ${w}`).get(...args).n;
+  const limit = Math.min(Math.max(q.limit ?? 50, 1), 200);
+  const rows = db.prepare(`SELECT c.domain, c.at, c.kind, c.item, c.old, c.new, s.name FROM store_changes c LEFT JOIN stores s ON s.domain = c.domain WHERE ${w} ORDER BY c.at DESC LIMIT ? OFFSET ?`).all(...args, limit, Math.max(q.offset ?? 0, 0)).map((r) => ({ ...r }));
+  return { total, changes: rows };
+}
+function storeHistory(db, domain, limit = 10) {
+  return db.prepare("SELECT at, kind, item, old, new FROM store_changes WHERE domain = ? ORDER BY at DESC LIMIT ?").all(domain, limit).map((r) => ({ ...r }));
 }
 
 // ../../node_modules/.bun/cheerio@1.2.0/node_modules/cheerio/dist/esm/options.js
@@ -54334,28 +54485,28 @@ var EntityDecoder = class {
    * @param offset The offset at which the entity begins. Should be 0 if this is not the first call.
    * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
    */
-  write(str, offset) {
+  write(str2, offset) {
     switch (this.state) {
       case EntityDecoderState.EntityStart: {
-        if (str.charCodeAt(offset) === CharCodes.NUM) {
+        if (str2.charCodeAt(offset) === CharCodes.NUM) {
           this.state = EntityDecoderState.NumericStart;
           this.consumed += 1;
-          return this.stateNumericStart(str, offset + 1);
+          return this.stateNumericStart(str2, offset + 1);
         }
         this.state = EntityDecoderState.NamedEntity;
-        return this.stateNamedEntity(str, offset);
+        return this.stateNamedEntity(str2, offset);
       }
       case EntityDecoderState.NumericStart: {
-        return this.stateNumericStart(str, offset);
+        return this.stateNumericStart(str2, offset);
       }
       case EntityDecoderState.NumericDecimal: {
-        return this.stateNumericDecimal(str, offset);
+        return this.stateNumericDecimal(str2, offset);
       }
       case EntityDecoderState.NumericHex: {
-        return this.stateNumericHex(str, offset);
+        return this.stateNumericHex(str2, offset);
       }
       case EntityDecoderState.NamedEntity: {
-        return this.stateNamedEntity(str, offset);
+        return this.stateNamedEntity(str2, offset);
       }
     }
   }
@@ -54368,22 +54519,22 @@ var EntityDecoder = class {
    * @param offset The current offset.
    * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
    */
-  stateNumericStart(str, offset) {
-    if (offset >= str.length) {
+  stateNumericStart(str2, offset) {
+    if (offset >= str2.length) {
       return -1;
     }
-    if ((str.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
+    if ((str2.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
       this.state = EntityDecoderState.NumericHex;
       this.consumed += 1;
-      return this.stateNumericHex(str, offset + 1);
+      return this.stateNumericHex(str2, offset + 1);
     }
     this.state = EntityDecoderState.NumericDecimal;
-    return this.stateNumericDecimal(str, offset);
+    return this.stateNumericDecimal(str2, offset);
   }
-  addToNumericResult(str, start, end2, base) {
+  addToNumericResult(str2, start, end2, base) {
     if (start !== end2) {
       const digitCount = end2 - start;
-      this.result = this.result * Math.pow(base, digitCount) + parseInt(str.substr(start, digitCount), base);
+      this.result = this.result * Math.pow(base, digitCount) + parseInt(str2.substr(start, digitCount), base);
       this.consumed += digitCount;
     }
   }
@@ -54396,18 +54547,18 @@ var EntityDecoder = class {
    * @param offset The current offset.
    * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
    */
-  stateNumericHex(str, offset) {
+  stateNumericHex(str2, offset) {
     const startIdx = offset;
-    while (offset < str.length) {
-      const char = str.charCodeAt(offset);
+    while (offset < str2.length) {
+      const char = str2.charCodeAt(offset);
       if (isNumber(char) || isHexadecimalCharacter(char)) {
         offset += 1;
       } else {
-        this.addToNumericResult(str, startIdx, offset, 16);
+        this.addToNumericResult(str2, startIdx, offset, 16);
         return this.emitNumericEntity(char, 3);
       }
     }
-    this.addToNumericResult(str, startIdx, offset, 16);
+    this.addToNumericResult(str2, startIdx, offset, 16);
     return -1;
   }
   /**
@@ -54419,18 +54570,18 @@ var EntityDecoder = class {
    * @param offset The current offset.
    * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
    */
-  stateNumericDecimal(str, offset) {
+  stateNumericDecimal(str2, offset) {
     const startIdx = offset;
-    while (offset < str.length) {
-      const char = str.charCodeAt(offset);
+    while (offset < str2.length) {
+      const char = str2.charCodeAt(offset);
       if (isNumber(char)) {
         offset += 1;
       } else {
-        this.addToNumericResult(str, startIdx, offset, 10);
+        this.addToNumericResult(str2, startIdx, offset, 10);
         return this.emitNumericEntity(char, 2);
       }
     }
-    this.addToNumericResult(str, startIdx, offset, 10);
+    this.addToNumericResult(str2, startIdx, offset, 10);
     return -1;
   }
   /**
@@ -54475,12 +54626,12 @@ var EntityDecoder = class {
    * @param offset The current offset.
    * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
    */
-  stateNamedEntity(str, offset) {
+  stateNamedEntity(str2, offset) {
     const { decodeTree } = this;
     let current = decodeTree[this.treeIndex];
     let valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
-    for (; offset < str.length; offset++, this.excess++) {
-      const char = str.charCodeAt(offset);
+    for (; offset < str2.length; offset++, this.excess++) {
+      const char = str2.charCodeAt(offset);
       this.treeIndex = determineBranch(decodeTree, current, this.treeIndex + Math.max(1, valueLength), char);
       if (this.treeIndex < 0) {
         return this.result === 0 || // If we are parsing an attribute
@@ -54565,15 +54716,15 @@ var EntityDecoder = class {
 };
 function getDecoder(decodeTree) {
   let ret = "";
-  const decoder = new EntityDecoder(decodeTree, (str) => ret += fromCodePoint(str));
-  return function decodeWithTrie(str, decodeMode) {
+  const decoder = new EntityDecoder(decodeTree, (str2) => ret += fromCodePoint(str2));
+  return function decodeWithTrie(str2, decodeMode) {
     let lastIndex = 0;
     let offset = 0;
-    while ((offset = str.indexOf("&", offset)) >= 0) {
-      ret += str.slice(lastIndex, offset);
+    while ((offset = str2.indexOf("&", offset)) >= 0) {
+      ret += str2.slice(lastIndex, offset);
       decoder.startEntity(decodeMode);
       const len = decoder.write(
-        str,
+        str2,
         // Skip the "&"
         offset + 1
       );
@@ -54584,7 +54735,7 @@ function getDecoder(decodeTree) {
       lastIndex = offset + len;
       offset = len === 0 ? lastIndex + 1 : lastIndex;
     }
-    const result = ret + str.slice(lastIndex);
+    const result = ret + str2.slice(lastIndex);
     ret = "";
     return result;
   };
@@ -54637,28 +54788,28 @@ var xmlCodeMap = /* @__PURE__ */ new Map([
 ]);
 var getCodePoint = (
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  String.prototype.codePointAt != null ? (str, index2) => str.codePointAt(index2) : (
+  String.prototype.codePointAt != null ? (str2, index2) => str2.codePointAt(index2) : (
     // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
     (c, index2) => (c.charCodeAt(index2) & 64512) === 55296 ? (c.charCodeAt(index2) - 55296) * 1024 + c.charCodeAt(index2 + 1) - 56320 + 65536 : c.charCodeAt(index2)
   )
 );
-function encodeXML(str) {
+function encodeXML(str2) {
   let ret = "";
   let lastIdx = 0;
   let match;
-  while ((match = xmlReplacer.exec(str)) !== null) {
+  while ((match = xmlReplacer.exec(str2)) !== null) {
     const i = match.index;
-    const char = str.charCodeAt(i);
+    const char = str2.charCodeAt(i);
     const next2 = xmlCodeMap.get(char);
     if (next2 !== void 0) {
-      ret += str.substring(lastIdx, i) + next2;
+      ret += str2.substring(lastIdx, i) + next2;
       lastIdx = i + 1;
     } else {
-      ret += `${str.substring(lastIdx, i)}&#x${getCodePoint(str, i).toString(16)};`;
+      ret += `${str2.substring(lastIdx, i)}&#x${getCodePoint(str2, i).toString(16)};`;
       lastIdx = xmlReplacer.lastIndex += Number((char & 64512) === 55296);
     }
   }
-  return ret + str.substr(lastIdx);
+  return ret + str2.substr(lastIdx);
 }
 function getEscaper(regex, map2) {
   return function escape3(data2) {
@@ -55572,11 +55723,11 @@ __export(attributes_exports, {
 function isCheerio(maybeCheerio) {
   return maybeCheerio.cheerio != null;
 }
-function camelCase(str) {
-  return str.replace(/[._-](\w|$)/g, (_, x) => x.toUpperCase());
+function camelCase(str2) {
+  return str2.replace(/[._-](\w|$)/g, (_, x) => x.toUpperCase());
 }
-function cssCase(str) {
-  return str.replace(/[A-Z]/g, "-$&").toLowerCase();
+function cssCase(str2) {
+  return str2.replace(/[A-Z]/g, "-$&").toLowerCase();
 }
 function domEach(array2, fn) {
   const len = array2.length;
@@ -55592,15 +55743,15 @@ var CharacterCode;
   CharacterCode2[CharacterCode2["UpperZ"] = 90] = "UpperZ";
   CharacterCode2[CharacterCode2["Exclamation"] = 33] = "Exclamation";
 })(CharacterCode || (CharacterCode = {}));
-function isHtml(str) {
-  if (typeof str !== "string") {
+function isHtml(str2) {
+  if (typeof str2 !== "string") {
     return false;
   }
-  const tagStart = str.indexOf("<");
-  if (tagStart === -1 || tagStart > str.length - 3)
+  const tagStart = str2.indexOf("<");
+  if (tagStart === -1 || tagStart > str2.length - 3)
     return false;
-  const tagChar = str.charCodeAt(tagStart + 1);
-  return (tagChar >= CharacterCode.LowerA && tagChar <= CharacterCode.LowerZ || tagChar >= CharacterCode.UpperA && tagChar <= CharacterCode.UpperZ || tagChar === CharacterCode.Exclamation) && str.includes(">", tagStart + 2);
+  const tagChar = str2.charCodeAt(tagStart + 1);
+  return (tagChar >= CharacterCode.LowerA && tagChar <= CharacterCode.LowerZ || tagChar >= CharacterCode.UpperA && tagChar <= CharacterCode.UpperZ || tagChar === CharacterCode.Exclamation) && str2.includes(">", tagStart + 2);
 }
 
 // ../../node_modules/.bun/entities@7.0.1/node_modules/entities/dist/esm/decode-codepoint.js
@@ -57422,9 +57573,9 @@ function parseDataValue(value) {
     return true;
   if (value === "false")
     return false;
-  const num = Number(value);
-  if (value === String(num))
-    return num;
+  const num2 = Number(value);
+  if (value === String(num2))
+    return num2;
   if (rbrace.test(value)) {
     try {
       return JSON.parse(value);
@@ -58616,17 +58767,17 @@ function isFilter(s) {
   return false;
 }
 function getLimit(filter4, data2, partLimit) {
-  const num = data2 != null ? parseInt(data2, 10) : NaN;
+  const num2 = data2 != null ? parseInt(data2, 10) : NaN;
   switch (filter4) {
     case "first":
       return 1;
     case "nth":
     case "eq":
-      return isFinite(num) ? num >= 0 ? num + 1 : Infinity : 0;
+      return isFinite(num2) ? num2 >= 0 ? num2 + 1 : Infinity : 0;
     case "lt":
-      return isFinite(num) ? num >= 0 ? Math.min(num, partLimit) : Infinity : 0;
+      return isFinite(num2) ? num2 >= 0 ? Math.min(num2, partLimit) : Infinity : 0;
     case "gt":
-      return isFinite(num) ? Infinity : 0;
+      return isFinite(num2) ? Infinity : 0;
     case "odd":
       return 2 * partLimit;
     case "even":
@@ -58676,7 +58827,7 @@ function some(elements, selector, options = {}) {
   return plain.length > 0 && elements.some(_compileToken(plain, options)) || filtered.some((sel) => filterBySelector(sel, elements, options).length > 0);
 }
 function filterByPosition(filter4, elems, data2, options) {
-  const num = typeof data2 === "string" ? parseInt(data2, 10) : NaN;
+  const num2 = typeof data2 === "string" ? parseInt(data2, 10) : NaN;
   switch (filter4) {
     case "first":
     case "lt":
@@ -58685,9 +58836,9 @@ function filterByPosition(filter4, elems, data2, options) {
       return elems.length > 0 ? [elems[elems.length - 1]] : elems;
     case "nth":
     case "eq":
-      return isFinite(num) && Math.abs(num) < elems.length ? [num < 0 ? elems[elems.length + num] : elems[num]] : [];
+      return isFinite(num2) && Math.abs(num2) < elems.length ? [num2 < 0 ? elems[elems.length + num2] : elems[num2]] : [];
     case "gt":
-      return isFinite(num) ? elems.slice(num + 1) : [];
+      return isFinite(num2) ? elems.slice(num2 + 1) : [];
     case "even":
       return elems.filter((_, i) => i % 2 === 0);
     case "odd":
@@ -59439,8 +59590,8 @@ function empty() {
     el.children.length = 0;
   });
 }
-function html2(str) {
-  if (str === void 0) {
+function html2(str2) {
+  if (str2 === void 0) {
     const el = this[0];
     if (!el || !hasChildren(el))
       return null;
@@ -59452,19 +59603,19 @@ function html2(str) {
     for (const child of el.children) {
       child.next = child.prev = child.parent = null;
     }
-    const content = isCheerio(str) ? str.toArray() : this._parse(`${str}`, this.options, false, el).children;
+    const content = isCheerio(str2) ? str2.toArray() : this._parse(`${str2}`, this.options, false, el).children;
     update(content, el);
   });
 }
 function toString() {
   return this._render(this);
 }
-function text2(str) {
-  if (str === void 0) {
+function text2(str2) {
+  if (str2 === void 0) {
     return text(this);
   }
-  if (typeof str === "function") {
-    return domEach(this, (el, i) => this._make(el).text(str.call(el, i, text([el]))));
+  if (typeof str2 === "function") {
+    return domEach(this, (el, i) => this._make(el).text(str2.call(el, i, text([el]))));
   }
   return domEach(this, (el) => {
     if (!hasChildren(el))
@@ -59472,7 +59623,7 @@ function text2(str) {
     for (const child of el.children) {
       child.next = child.prev = child.parent = null;
     }
-    const textNode = new Text2(`${str}`);
+    const textNode = new Text2(`${str2}`);
     update(textNode, el);
   });
 }
@@ -59541,7 +59692,7 @@ function getCss(el, prop2) {
   return styles;
 }
 function stringify(obj) {
-  return Object.keys(obj).reduce((str, prop2) => `${str}${str ? " " : ""}${prop2}: ${obj[prop2]};`, "");
+  return Object.keys(obj).reduce((str2, prop2) => `${str2}${str2 ? " " : ""}${prop2}: ${obj[prop2]};`, "");
 }
 function parse7(styles) {
   styles = (styles || "").trim();
@@ -59549,16 +59700,16 @@ function parse7(styles) {
     return {};
   const obj = {};
   let key;
-  for (const str of styles.split(";")) {
-    const n = str.indexOf(":");
-    if (n < 1 || n === str.length - 1) {
-      const trimmed = str.trimEnd();
+  for (const str2 of styles.split(";")) {
+    const n = str2.indexOf(":");
+    if (n < 1 || n === str2.length - 1) {
+      const trimmed = str2.trimEnd();
       if (trimmed.length > 0 && key !== void 0) {
         obj[key] += `;${trimmed}`;
       }
     } else {
-      key = str.slice(0, n).trim();
-      obj[key] = str.slice(n + 1).trim();
+      key = str2.slice(0, n).trim();
+      obj[key] = str2.slice(n + 1).trim();
     }
   }
   return obj;
@@ -67752,19 +67903,19 @@ function enquoteDoctypeId(id) {
   return quote + id + quote;
 }
 function serializeDoctypeContent(name, publicId, systemId) {
-  let str = "!DOCTYPE ";
+  let str2 = "!DOCTYPE ";
   if (name) {
-    str += name;
+    str2 += name;
   }
   if (publicId) {
-    str += ` PUBLIC ${enquoteDoctypeId(publicId)}`;
+    str2 += ` PUBLIC ${enquoteDoctypeId(publicId)}`;
   } else if (systemId) {
-    str += " SYSTEM";
+    str2 += " SYSTEM";
   }
   if (systemId) {
-    str += ` ${enquoteDoctypeId(systemId)}`;
+    str2 += ` ${enquoteDoctypeId(systemId)}`;
   }
-  return str;
+  return str2;
 }
 var adapter = {
   // Re-exports from domhandler
@@ -68079,10 +68230,10 @@ var END_OF_UNQUOTED_ATTRIBUTE_VALUE = /* @__PURE__ */ new Set([
   Chars.TAB,
   Chars.GT
 ]);
-function toUint8Array(str) {
-  const arr = new Uint8Array(str.length);
-  for (let i = 0; i < str.length; i++) {
-    arr[i] = str.charCodeAt(i);
+function toUint8Array(str2) {
+  const arr = new Uint8Array(str2.length);
+  for (let i = 0; i < str2.length; i++) {
+    arr[i] = str2.charCodeAt(i);
   }
   return arr;
 }
@@ -68108,6 +68259,72 @@ var undici = __toESM(require_undici(), 1);
 var import_whatwg_mimetype = __toESM(require_mime_type(), 1);
 
 // ../core/src/html.ts
+var CHANNEL_HOSTS = [
+  ["amazon", /(^|\.)amazon\.(de|com|co\.uk|fr|it|es|nl|at|se|pl)$/],
+  ["etsy", /(^|\.)etsy\.com$/],
+  ["ebay", /(^|\.)ebay\.(de|com|at|ch|co\.uk)$/],
+  ["zalando", /(^|\.)zalando\.[a-z.]+$/],
+  ["otto", /(^|\.)otto\.de$/],
+  ["kaufland", /(^|\.)kaufland\.(de|at|sk|cz|pl)$/],
+  ["galaxus", /(^|\.)galaxus\.(de|ch|at)$/]
+];
+var PAGE_RULES = [
+  ["wholesale", /wholesale|\bb2b\b|h(ae|ä)ndler(?!suche)|gro(ss|ß)handel|wiederverk(ae|ä)ufer|gesch(ae|ä)ftskunde|reseller|retailer/i],
+  ["careers", /karriere|\bjobs?\b|careers?|stellenangebote|wir-suchen/i],
+  ["store_locator", /store-?locator|filiale|h(ae|ä)ndlersuche|stockists?|standorte|unsere-l(ae|ä)den|find-a-store/i],
+  ["returns", /retoure|returns?-?portal|r(ue|ü)cksendung|\breturns?\b/i],
+  ["size_guide", /gr(oe|ö)(ss|ß)entabelle|size-?(guide|chart)|gr(oe|ö)(ss|ß)enberatung/i],
+  ["gift_cards", /gift-?card|geschenk(gutschein|karte)/i],
+  ["affiliate", /affiliate|partnerprogramm|influencer/i],
+  ["blog", /\/blogs\//i]
+];
+var CARRIER_TEXT = [
+  ["dhl", /\bDHL\b/],
+  ["dpd", /\bDPD\b/],
+  ["gls", /\bGLS\b/],
+  ["hermes", /\bHermes\b/],
+  ["ups", /\bUPS\b/],
+  ["deutsche_post", /Deutsche Post/],
+  ["fedex", /\bFed[Ee]x\b/]
+];
+var CARRIER_SRC = /(?:^|[\/_.-])(dhl|dpd|gls|hermes|ups|fedex|deutsche-?post)(?=[\/_.-]|$)/gi;
+function num(v) {
+  if (v == null || v === "") return null;
+  const n = typeof v === "number" ? v : Number(String(v).replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+function shopReviews($2) {
+  const visit = (node) => {
+    if (!node || typeof node !== "object") return null;
+    if (Array.isArray(node)) {
+      for (const n of node) {
+        const r = visit(n);
+        if (r) return r;
+      }
+      return null;
+    }
+    const o = node;
+    if (o["@graph"]) return visit(o["@graph"]);
+    const type = String(o["@type"] ?? "");
+    const agg = o.aggregateRating;
+    if (agg && !/Product|Offer/i.test(type)) {
+      const count2 = num(agg.reviewCount ?? agg.ratingCount);
+      if (count2 && count2 > 0) return { count: count2, rating: num(agg.ratingValue), source: "structured_data" };
+    }
+    return null;
+  };
+  for (const el of $2('script[type="application/ld+json"]').toArray()) {
+    try {
+      const r = visit(JSON.parse($2(el).html() ?? ""));
+      if (r) return r;
+    } catch {
+    }
+  }
+  const badge = $2('[class*="jdgm-all-reviews"][data-number-of-reviews], [class*="jdgm-carousel"][data-number-of-reviews]').first();
+  const count = num(badge.attr("data-number-of-reviews"));
+  if (count && count > 0) return { count, rating: num(badge.attr("data-average-rating")), source: "judgeme" };
+  return null;
+}
 var SOCIAL_HOSTS = {
   instagram: /(^|\.)instagram\.com$/,
   facebook: /(^|\.)facebook\.com$/,
@@ -68143,6 +68360,8 @@ function parseStorefront(html3, pageUrl) {
   const socials = {};
   const impressum = /* @__PURE__ */ new Set();
   const contact = /* @__PURE__ */ new Set();
+  const channels = /* @__PURE__ */ new Set();
+  const pages = /* @__PURE__ */ new Set();
   $2("a[href]").each((_, el) => {
     const href = ($2(el).attr("href") ?? "").trim();
     if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
@@ -68156,8 +68375,13 @@ function parseStorefront(html3, pageUrl) {
     if (abs.origin === origin) {
       if (IMPRESSUM_RE.test(abs.pathname) || IMPRESSUM_RE.test(text3)) impressum.add(abs.origin + abs.pathname);
       if (CONTACT_RE.test(abs.pathname)) contact.add(abs.origin + abs.pathname);
+      if (!/^\/(products|collections)\//.test(abs.pathname)) {
+        const path5 = decodeURIComponent(abs.pathname).toLowerCase();
+        for (const [page, re] of PAGE_RULES) if (re.test(path5) || page !== "blog" && re.test(text3.slice(0, 60))) pages.add(page);
+      }
       return;
     }
+    for (const [channel, re] of CHANNEL_HOSTS) if (re.test(abs.hostname) && abs.pathname.length > 1) channels.add(channel);
     for (const [network, re] of Object.entries(SOCIAL_HOSTS)) {
       if (re.test(abs.hostname) && !socials[network] && !SOCIAL_SKIP.test(abs.pathname + abs.search) && abs.pathname.length > 1) {
         socials[network] = abs.toString();
@@ -68165,6 +68389,19 @@ function parseStorefront(html3, pageUrl) {
     }
   });
   const lang = $2("html").attr("lang")?.trim() || null;
+  const shopIdMatch = html3.match(/"shopId"\s*:\s*(\d{4,})/) ?? html3.match(/[?&]shop_id=(\d{4,})/) ?? html3.match(/Shopify\.shopId\s*=\s*(\d{4,})/);
+  const carriers = /* @__PURE__ */ new Set();
+  const imgs = $2("img").toArray();
+  const visible = `${$2("body").text()}
+${imgs.map((el) => $2(el).attr("alt") ?? "").join("\n")}`;
+  for (const [carrier, re] of CARRIER_TEXT) if (re.test(visible)) carriers.add(carrier);
+  for (const el of imgs) {
+    const src = ($2(el).attr("src") ?? $2(el).attr("data-src") ?? "").split("?")[0];
+    for (const m of src.matchAll(CARRIER_SRC)) {
+      const c = m[1].toLowerCase();
+      carriers.add(c.startsWith("deutsche") ? "deutsche_post" : c);
+    }
+  }
   return {
     isShopify,
     isPasswordPage,
@@ -68175,8 +68412,17 @@ function parseStorefront(html3, pageUrl) {
     apps,
     socials,
     impressumLinks: [...impressum],
-    contactLinks: [...contact]
+    contactLinks: [...contact],
+    shopId: shopIdMatch ? Number(shopIdMatch[1]) : null,
+    channels: [...channels].sort(),
+    pages: [...pages].sort(),
+    carriers: [...carriers].sort(),
+    reviews: shopReviews($2)
   };
+}
+function carriersInText(lines) {
+  const text3 = lines.join("\n");
+  return CARRIER_TEXT.filter(([, re]) => re.test(text3)).map(([c]) => c);
 }
 function extractLines(html3) {
   const $2 = load(html3);
@@ -68679,6 +68925,8 @@ function estimateRevenue(input) {
 var bandRange = (id) => REVENUE_BANDS.find((b) => b.id === id);
 
 // ../core/src/shopify.ts
+var POD_RE = /printful|printify|gelato|teeinblue|print[ -]on[ -]demand|spreadshirt|teemill|customcat/i;
+var DROPSHIP_RE = /dropship|cjdropshipping|aliexpress|dsers|zendrop|spocket|autods|syncee|\bbigbuy\b/i;
 async function fetchMeta(origin, opts = {}) {
   const res = await politeGet(`${origin}/meta.json`, opts);
   if (res.status !== 200 || !res.contentType.includes("json")) return null;
@@ -68689,19 +68937,19 @@ async function fetchMeta(origin, opts = {}) {
     return null;
   }
   if (typeof j.myshopify_domain !== "string" || !j.myshopify_domain.endsWith(".myshopify.com")) return null;
-  const num = (v) => typeof v === "number" && Number.isFinite(v) ? v : null;
-  const str = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  const num2 = (v) => typeof v === "number" && Number.isFinite(v) ? v : null;
+  const str2 = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
   return {
-    name: str(j.name),
+    name: str2(j.name),
     myshopify_domain: j.myshopify_domain,
-    domain: str(j.domain),
-    country: str(j.country),
-    city: str(j.city),
-    currency: str(j.currency),
+    domain: str2(j.domain),
+    country: str2(j.country),
+    city: str2(j.city),
+    currency: str2(j.currency),
     ships_to: Array.isArray(j.ships_to_countries) ? j.ships_to_countries.filter((c) => typeof c === "string") : [],
-    product_count: num(j.published_products_count),
-    collection_count: num(j.published_collections_count),
-    description: str(j.description)
+    product_count: num2(j.published_products_count),
+    collection_count: num2(j.published_collections_count),
+    description: str2(j.description)
   };
 }
 function top(values, n) {
@@ -68712,7 +68960,7 @@ function top(values, n) {
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([k]) => k);
 }
-function summarizeProducts(products) {
+function summarizeProducts(products, now = Date.now()) {
   const prices = [];
   let onSale = 0;
   let withVariants = 0;
@@ -68734,6 +68982,9 @@ function summarizeProducts(products) {
   prices.sort((a, b) => a - b);
   dates.sort();
   const tags = products.flatMap((p) => Array.isArray(p.tags) ? p.tags : typeof p.tags === "string" ? p.tags.split(",") : []);
+  const since = (days) => dates.filter((d) => now - Date.parse(d) <= days * 864e5).length;
+  const hint = (re) => products.some((p) => re.test(p.vendor ?? "")) || tags.filter((t) => re.test(t)).length >= 2;
+  const fulfilment = hint(POD_RE) ? "print_on_demand" : hint(DROPSHIP_RE) ? "dropshipping" : null;
   return {
     sample_size: products.length,
     price_min: prices.length ? prices[0] : null,
@@ -68745,8 +68996,24 @@ function summarizeProducts(products) {
     first_product_at: dates[0]?.slice(0, 10) ?? null,
     last_product_at: dates[dates.length - 1]?.slice(0, 10) ?? null,
     on_sale_share: withVariants ? Math.round(onSale / withVariants * 100) / 100 : null,
-    titles: products.slice(0, 6).map((p) => (p.title ?? "").slice(0, 80)).filter(Boolean)
+    titles: products.slice(0, 6).map((p) => (p.title ?? "").slice(0, 80)).filter(Boolean),
+    added_30d: since(30),
+    added_90d: since(90),
+    fulfilment
   };
+}
+async function fetchOldestProductDate(origin, productCount, opts = {}) {
+  if (!(productCount > 1)) return null;
+  try {
+    const res = await politeGet(`${origin}/products.json?limit=1&page=${Math.floor(productCount)}`, { ...opts, maxBytes: 4e5 });
+    if (res.status !== 200) return null;
+    const p = JSON.parse(res.text).products?.[0];
+    const dates = [p?.published_at, p?.created_at].filter((d) => !!d).sort();
+    return dates[0]?.slice(0, 10) ?? null;
+  } catch (err) {
+    if (err instanceof TruffleError && (err.code === "budget_exceeded" || err.code === "rate_limited" || err.code === "challenged")) throw err;
+    return null;
+  }
 }
 async function fetchProductSample(origin, opts = {}) {
   try {
@@ -68818,7 +69085,32 @@ async function probeStore(input, opts = {}) {
     notes.push(`products: ${err.code ?? "error"}`);
     return null;
   });
-  return { domain, origin, status: "active", page, meta, products, impressum, notes };
+  const result = { domain, origin, status: "active", page, meta, products, impressum, notes };
+  if (opts.withExtras) {
+    const count = meta?.product_count ?? 0;
+    result.oldestProductAt = count > (products?.sample_size ?? 0) ? await fetchOldestProductDate(origin, count, { deadline }).catch(() => null) : products?.first_product_at ?? null;
+    result.policyCarriers = await politeGet(`${origin}/policies/shipping-policy`, { deadline, maxBytes: 6e5 }).then((res) => res.status === 200 ? carriersInText(extractLines(res.text)) : []).catch(() => []);
+  }
+  return result;
+}
+function ownerKey(i) {
+  if (!i?.found || i.entity_type !== "company") return null;
+  if (i.vat_id) return i.vat_id.replace(/\s+/g, "").toUpperCase();
+  if (i.register?.number) return `${(i.register.court ?? "").toLowerCase().replace(/\s+/g, "")}|${i.register.number.replace(/\s+/g, "").toUpperCase()}`;
+  return null;
+}
+function companyColumns(i) {
+  if (!i) return {};
+  const company = i.found && i.entity_type === "company";
+  return {
+    has_impressum: i.found ? 1 : 0,
+    entity_type: i.entity_type,
+    company_name: company ? i.company_name : null,
+    legal_form: company ? i.legal_form : null,
+    vat_id: company ? i.vat_id : null,
+    register_id: company && i.register?.number ? [i.register.court, i.register.number].filter(Boolean).join(" ") : null,
+    owner_key: ownerKey(i)
+  };
 }
 function probeToRow(p, source) {
   const now = (/* @__PURE__ */ new Date()).toISOString();
@@ -68849,7 +69141,18 @@ function probeToRow(p, source) {
     apps: p.page?.apps ?? [],
     theme: p.page?.theme.schema ?? p.page?.theme.name ?? null,
     socials: p.page?.socials ?? {},
-    ...p.impressum ? { has_impressum: p.impressum.found ? 1 : 0, entity_type: p.impressum.entity_type } : {}
+    shop_id: p.page?.shopId ?? null,
+    products_30d: p.products?.added_30d ?? null,
+    products_90d: p.products?.added_90d ?? null,
+    app_spend: appSpend(p.page?.apps ?? []),
+    channels: p.page?.channels ?? [],
+    pages: p.page?.pages ?? [],
+    fulfilment: (p.page?.apps ?? []).some((id) => APP_CATALOGUE.find((a) => a.id === id)?.category === "print_on_demand") ? "print_on_demand" : p.products?.fulfilment ?? null,
+    ...p.page?.reviews ? { reviews_count: p.page.reviews.count, reviews_rating: p.page.reviews.rating, reviews_source: p.page.reviews.source } : { reviews_count: null, reviews_rating: null, reviews_source: null },
+    // Carriers and the oldest product are only known on a full (withExtras) check; otherwise keep what's stored.
+    ...p.policyCarriers ? { carriers: [.../* @__PURE__ */ new Set([...p.page?.carriers ?? [], ...p.policyCarriers])].sort() } : {},
+    ...p.oldestProductAt !== void 0 ? { oldest_product_at: p.oldestProductAt } : {},
+    ...companyColumns(p.impressum)
   };
 }
 function buildReport(p) {
@@ -68895,10 +69198,10 @@ async function researchStore(db, input, { refresh = false } = {}) {
     const cached2 = getCachedResearch(db, domain, RESEARCH_CACHE_TTL_MS);
     if (cached2) return withRevenue(db, { ...cached2, cached: true });
   }
-  const probe = await probeStore(domain, { withImpressum: true, deadline: Date.now() + RESEARCH_BUDGET_MS });
+  const probe = await probeStore(domain, { withImpressum: true, withExtras: true, deadline: Date.now() + RESEARCH_BUDGET_MS });
   if (probe.status === "not_shopify") throw new TruffleError("not_shopify", "This site does not look like a Shopify store.", domain);
   const row2 = probeToRow(probe, "research");
-  if (!(row2.myshopify_domain && myshopifyTaken(db, row2.myshopify_domain, row2.domain))) upsertStore(db, row2);
+  if (!(row2.myshopify_domain && myshopifyTaken(db, row2.myshopify_domain, row2.domain))) upsertTracked(db, row2);
   const report = buildReport(probe);
   const partial2 = report.notes.some((n) => /budget_exceeded|rate_limited|challenged/.test(n)) || report.status === "active" && !report.catalogue?.sample_size;
   if (!partial2) {
@@ -68908,13 +69211,40 @@ async function researchStore(db, input, { refresh = false } = {}) {
   return withRevenue(db, report);
 }
 function withRevenue(db, r) {
-  if (r.status !== "active") return { ...r, revenue_estimate: null, labels: null };
-  const row2 = db.prepare("SELECT traffic_rank, category, subcategory, business_type, sells_to, segment, audience, signals, labelled_at FROM stores WHERE domain = ?").get(r.domain);
-  const labels = row2?.labelled_at ? { category: row2.category, subcategory: row2.subcategory, business_type: row2.business_type, sells_to: row2.sells_to, segment: row2.segment, audience: row2.audience, signals: JSON.parse(row2.signals ?? "[]") } : null;
-  return { ...r, revenue_estimate: estimateRevenue({ trafficRank: row2?.traffic_rank ?? null, priceMedian: r.catalogue?.price.median ?? null }), labels };
+  if (r.status !== "active") return { ...r, revenue_estimate: null, labels: null, profile: null };
+  const row2 = db.prepare("SELECT * FROM stores WHERE domain = ?").get(r.domain);
+  const json = (v) => JSON.parse(String(v ?? "[]"));
+  const n = (v) => v == null ? null : Number(v);
+  const labels = row2?.labelled_at ? {
+    category: row2.category ?? null,
+    subcategory: row2.subcategory ?? null,
+    business_type: row2.business_type ?? null,
+    sells_to: row2.sells_to ?? null,
+    segment: row2.segment ?? null,
+    audience: row2.audience ?? null,
+    signals: json(row2.signals)
+  } : null;
+  const others = row2?.owner_key ? db.prepare("SELECT domain FROM stores WHERE owner_key = ? AND domain != ? AND status = 'active' LIMIT 10").all(String(row2.owner_key), r.domain).map((x) => x.domain) : [];
+  const profile = row2 ? {
+    first_seen: row2.first_seen_at?.slice(0, 10) ?? null,
+    opened_est: row2.opened_est ?? null,
+    oldest_product: row2.oldest_product_at ?? null,
+    products_added: { last_30d: n(row2.products_30d), last_90d: n(row2.products_90d) },
+    app_spend_eur_month: n(row2.app_spend),
+    channels: json(row2.channels),
+    carriers: json(row2.carriers),
+    pages: json(row2.pages),
+    fulfilment: row2.fulfilment ?? null,
+    reviews: row2.reviews_count ? { count: Number(row2.reviews_count), rating: n(row2.reviews_rating), source: row2.reviews_source ?? null } : null,
+    instagram: row2.instagram_followers != null ? { followers: Number(row2.instagram_followers), posts: n(row2.instagram_posts), last_post: row2.instagram_last_post_at ?? null, checked: row2.instagram_checked_at?.slice(0, 10) ?? null } : null,
+    company_group: others.length ? { stores: others.length + 1, others } : null,
+    history: storeHistory(db, r.domain, 10)
+  } : null;
+  return { ...r, revenue_estimate: estimateRevenue({ trafficRank: n(row2?.traffic_rank), priceMedian: r.catalogue?.price.median ?? null }), labels, profile };
 }
 
 // ../core/src/search.ts
+var SINCE_SQL = "coalesce(opened_est, substr(oldest_product_at, 1, 7), substr(first_product_at, 1, 7))";
 function searchStores(db, f) {
   const where = [];
   const args = [];
@@ -68962,8 +69292,51 @@ function searchStores(db, f) {
     args.push(...ids);
   }
   if (f.launched_after) {
-    where.push("first_product_at >= ?");
-    args.push(f.launched_after);
+    where.push(`${SINCE_SQL} >= ?`);
+    args.push(f.launched_after.slice(0, 7));
+  }
+  if (f.opened_after) {
+    where.push(`${SINCE_SQL} >= ?`);
+    args.push(f.opened_after.slice(0, 7));
+  }
+  if (f.opened_before) {
+    where.push(`${SINCE_SQL} < ?`);
+    args.push(f.opened_before.slice(0, 7));
+  }
+  if (f.legal_form?.length) {
+    where.push(`legal_form IN (${f.legal_form.map(() => "?").join(",")})`);
+    args.push(...f.legal_form);
+  }
+  if (f.multi_store) where.push("owner_stores >= 2");
+  for (const [col, values] of [["channels", f.channels], ["carriers", f.carriers], ["pages", f.pages]]) {
+    for (const v of values ?? []) {
+      where.push(`EXISTS (SELECT 1 FROM json_each(stores.${col}) WHERE value = ?)`);
+      args.push(v);
+    }
+  }
+  for (const ex of f.exclude_fulfilment ?? []) {
+    where.push(ex === "dropshipping" ? "coalesce(fulfilment, '') != 'dropshipping' AND coalesce(business_type, '') != 'dropshipper'" : "coalesce(fulfilment, '') != 'print_on_demand'");
+  }
+  for (const [col, op, v] of [
+    ["reviews_count", ">=", f.reviews_min],
+    ["instagram_followers", ">=", f.instagram_followers_min],
+    ["instagram_followers", "<=", f.instagram_followers_max],
+    ["products_90d", ">=", f.products_added_90d_min],
+    ["app_spend", ">=", f.app_spend_min]
+  ]) {
+    if (v == null) continue;
+    where.push(`${col} ${op} ?`);
+    args.push(v);
+  }
+  const changeSince = f.changed_since ?? new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  for (const [kind, app] of [["app_added", f.added_app], ["app_removed", f.removed_app]]) {
+    if (!app) continue;
+    where.push("EXISTS (SELECT 1 FROM store_changes c WHERE c.domain = stores.domain AND c.kind = ? AND c.item = ? AND c.at >= ?)");
+    args.push(kind, app, changeSince);
+  }
+  if (f.changed?.length) {
+    where.push(`EXISTS (SELECT 1 FROM store_changes c WHERE c.domain = stores.domain AND c.kind IN (${f.changed.map(() => "?").join(",")}) AND c.at >= ?)`);
+    args.push(...f.changed, changeSince);
   }
   if (f.revenue_min) {
     where.push("revenue_monthly >= ?");
@@ -69020,23 +69393,31 @@ function searchStores(db, f) {
     relevance: "product_count IS NULL, (CASE WHEN product_count BETWEEN 20 AND 2000 THEN 0 ELSE 1 END), last_product_at DESC",
     products_desc: "product_count DESC",
     products_asc: "product_count ASC",
-    newest: "first_product_at DESC",
-    oldest: "first_product_at ASC",
+    newest: `${SINCE_SQL} IS NULL, ${SINCE_SQL} DESC`,
+    oldest: `${SINCE_SQL} IS NULL, ${SINCE_SQL} ASC`,
     price_desc: "price_median DESC",
     price_asc: "price_median ASC",
+    followers_desc: "instagram_followers IS NULL, instagram_followers DESC",
+    active_desc: "products_90d IS NULL, products_90d DESC",
+    app_spend_desc: "app_spend IS NULL, app_spend DESC",
+    reviews_desc: "reviews_count IS NULL, reviews_count DESC",
+    recently_changed: "last_change IS NULL, last_change DESC",
     random: "random()"
   };
   const limit = Math.min(Math.max(f.limit ?? 25, 1), 200);
   const offset = Math.max(f.offset ?? 0, 0);
   const total = db.prepare(`SELECT count(*) AS n FROM stores ${whereSql}`).get(...args).n;
   const rows = db.prepare(
-    `SELECT domain, name, city, product_count, price_min, price_median, price_max, currency, product_types, apps, theme, first_product_at, language, revenue_band, category, subcategory, business_type
+    `SELECT domain, name, city, product_count, price_min, price_median, price_max, currency, product_types, apps, theme, ${SINCE_SQL} AS since, language, revenue_band,
+         category, subcategory, business_type, legal_form, instagram_followers, products_90d, app_spend, channels, owner_stores,
+         (SELECT c.kind || coalesce(':' || c.item, '') || ' ' || substr(c.at, 1, 10) FROM store_changes c WHERE c.domain = stores.domain ORDER BY c.at DESC LIMIT 1) AS last_change_text,
+         (SELECT max(c.at) FROM store_changes c WHERE c.domain = stores.domain) AS last_change
        FROM stores ${whereSql} ORDER BY ${order[f.sort ?? "relevance"]} LIMIT ? OFFSET ?`
   ).all(...args, limit, offset);
   const hits = rows.map((r) => {
     const cur = r.currency && r.currency !== "EUR" ? ` ${r.currency}` : "";
     const price = r.price_median != null ? `${Math.round(Number(r.price_min))}-${Math.round(Number(r.price_max))} (median ${Math.round(Number(r.price_median))})${cur}` : null;
-    return {
+    const hit = {
       domain: String(r.domain),
       name: r.name ?? null,
       city: r.city ?? null,
@@ -69045,13 +69426,22 @@ function searchStores(db, f) {
       types: JSON.parse(String(r.product_types ?? "[]")).slice(0, 3),
       apps: JSON.parse(String(r.apps ?? "[]")),
       theme: r.theme ?? null,
-      since: r.first_product_at ?? null,
+      since: r.since ?? null,
       revenue: r.revenue_band ? REVENUE_BANDS.find((b) => b.id === r.revenue_band)?.label ?? null : null,
       category: r.category ?? null,
       niche: r.subcategory ?? null,
       business: r.business_type ?? null,
       lang: r.language ?? null
     };
+    const channels = JSON.parse(String(r.channels ?? "[]"));
+    if (r.legal_form) hit.company = String(r.legal_form);
+    if (r.instagram_followers != null) hit.ig = Number(r.instagram_followers);
+    if (r.products_90d) hit.new_90d = Number(r.products_90d);
+    if (r.app_spend) hit.app_spend = Number(r.app_spend);
+    if (channels.length) hit.channels = channels;
+    if (Number(r.owner_stores) >= 2) hit.stores_in_group = Number(r.owner_stores);
+    if (r.last_change_text) hit.change = String(r.last_change_text);
+    return hit;
   });
   return { total, returned: hits.length, offset, hits };
 }
@@ -69071,6 +69461,13 @@ function indexStats(db) {
     by_business_type: all("SELECT business_type, count(*) n FROM stores WHERE status='active' AND business_type IS NOT NULL GROUP BY 1 ORDER BY n DESC"),
     by_sells_to: all("SELECT sells_to, count(*) n FROM stores WHERE status='active' AND sells_to IS NOT NULL GROUP BY 1 ORDER BY n DESC"),
     by_signal: all("SELECT value signal, count(*) n FROM stores, json_each(stores.signals) WHERE status='active' GROUP BY 1 ORDER BY n DESC"),
+    by_legal_form: all("SELECT legal_form, count(*) n FROM stores WHERE status='active' AND legal_form IS NOT NULL GROUP BY 1 ORDER BY n DESC LIMIT 12"),
+    by_channel: all("SELECT value channel, count(*) n FROM stores, json_each(stores.channels) WHERE status='active' GROUP BY 1 ORDER BY n DESC"),
+    by_page: all("SELECT value page, count(*) n FROM stores, json_each(stores.pages) WHERE status='active' GROUP BY 1 ORDER BY n DESC"),
+    coverage: one(`SELECT sum(entity_type IN ('company','natural_person')) company_known, sum(instagram_followers IS NOT NULL) instagram,
+      sum(reviews_count IS NOT NULL) reviews, sum(opened_est IS NOT NULL) opened_est, count(DISTINCT CASE WHEN owner_stores >= 2 THEN owner_key END) multi_store_companies
+      FROM stores WHERE status='active'`),
+    recent_changes: all(`SELECT kind, count(*) n FROM store_changes WHERE at >= date('now', '-30 days') GROUP BY 1 ORDER BY n DESC`),
     last_seeded_at: db.prepare("SELECT value FROM meta WHERE key='last_seeded_at'").get()?.value ?? null
   };
 }
@@ -69172,6 +69569,10 @@ var previewSearch = (filters2) => callPreview("/api/preview/search", { method: "
 var previewStats = () => callPreview("/api/preview/stats");
 
 // src/tools.ts
+var CHANNELS = ["amazon", "etsy", "ebay", "zalando", "otto", "kaufland", "galaxus"];
+var CARRIERS = ["dhl", "dpd", "gls", "hermes", "ups", "deutsche_post", "fedex"];
+var PAGES = ["wholesale", "careers", "store_locator", "returns", "size_guide", "gift_cards", "affiliate", "blog"];
+var DATE = /^\d{4}-\d{2}(-\d{2})?$/;
 var APP_CATEGORIES = [...new Set(APP_CATALOGUE.map((a) => a.category))];
 var CHARACTER_LIMIT = 25e3;
 var size = (v) => JSON.stringify(v).length;
@@ -69187,11 +69588,28 @@ var searchInput = {
   has_apps: external_exports.array(external_exports.string()).optional().describe("Store must use ALL of these app ids (see truffle_index_stats for ids)."),
   lacks_apps: external_exports.array(external_exports.string()).optional().describe("Store must use NONE of these app ids."),
   lacks_app_categories: external_exports.array(external_exports.enum(APP_CATEGORIES)).optional().describe("Store must have no detected app in these categories, e.g. ['reviews'] for stores with no review app."),
-  launched_after: external_exports.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("Earliest product in the sample published on/after this date (YYYY-MM-DD). Proxy for store age."),
+  launched_after: external_exports.string().regex(DATE).optional().describe("Same as opened_after (kept for older prompts)."),
+  opened_after: external_exports.string().regex(DATE).optional().describe("Store opened in or after this month (YYYY-MM). Estimated from Shopify's shop id and the oldest product; good to the month or two."),
+  opened_before: external_exports.string().regex(DATE).optional().describe("Store opened before this month (YYYY-MM)."),
   theme: external_exports.string().optional().describe("Theme name contains, e.g. 'Dawn'."),
   revenue_min: external_exports.enum(REVENUE_BAND_IDS).optional().describe("Lowest estimated monthly online revenue band: under_10k, 10k_50k, 50k_250k, 250k_1m, over_1m. A rough estimate from traffic and prices, not reported figures."),
   revenue_max: external_exports.enum(REVENUE_BAND_IDS).optional().describe("Highest estimated monthly revenue band (same values as revenue_min)."),
-  entity_type: external_exports.enum(["company", "natural_person"]).optional().describe("Only stores whose Impressum shows a company or an individual (only known after research)."),
+  entity_type: external_exports.enum(["company", "natural_person"]).optional().describe("Who runs the store, from its Impressum: 'company' (GmbH, UG, AG\u2026) or 'natural_person' (one-person shop). Stores not checked yet never match."),
+  legal_form: external_exports.array(external_exports.string()).optional().describe("Company legal form, any of e.g. ['GmbH', 'UG (haftungsbeschr\xE4nkt)', 'AG', 'GmbH & Co. KG', 'e.K.']. truffle_index_stats lists them with counts."),
+  multi_store: external_exports.boolean().optional().describe("Only companies running two or more stores (same VAT or register number). Results show stores_in_group."),
+  channels: external_exports.array(external_exports.enum(CHANNELS)).optional().describe("Store links to ALL of these marketplaces from its site, e.g. ['amazon'] for brands also selling on Amazon."),
+  carriers: external_exports.array(external_exports.enum(CARRIERS)).optional().describe("Store names ALL of these carriers on its homepage or shipping policy."),
+  pages: external_exports.array(external_exports.enum(PAGES)).optional().describe("Store links ALL of these pages: wholesale (B2B/reseller area), careers (hiring), store_locator (physical shops or stockists), returns, size_guide, gift_cards, affiliate, blog."),
+  exclude_fulfilment: external_exports.array(external_exports.enum(["print_on_demand", "dropshipping"])).optional().describe("Drop print-on-demand stores (Printful, Printify, Gelato\u2026) and/or dropshippers (supplier hints or business_type dropshipper)."),
+  reviews_min: external_exports.number().int().min(1).optional().describe("At least this many shop reviews (from the homepage's review widget or structured data; many stores show none)."),
+  instagram_followers_min: external_exports.number().int().min(0).optional().describe("At least this many Instagram followers (checked about monthly)."),
+  instagram_followers_max: external_exports.number().int().min(0).optional().describe("At most this many Instagram followers, e.g. 10000 for micro brands."),
+  products_added_90d_min: external_exports.number().int().min(1).optional().describe("Published at least this many new products in the last 90 days: an active, growing catalogue."),
+  app_spend_min: external_exports.number().int().min(1).optional().describe("Estimated monthly spend on detected paid apps, EUR, at least this much (a floor: backend apps are invisible)."),
+  added_app: external_exports.string().optional().describe("Installed this app id recently (since changed_since, default last 30 days). E.g. 'klaviyo'."),
+  removed_app: external_exports.string().optional().describe("Removed this app id recently, e.g. 'yotpo' for stores that just dropped Yotpo: a switching moment."),
+  changed: external_exports.array(external_exports.enum(CHANGE_KINDS)).optional().describe("Had any of these changes since changed_since: status, app_added, app_removed, theme, name, products, price, channel_added, channel_removed, legal_form, followers."),
+  changed_since: external_exports.string().regex(DATE).optional().describe("Start date for added_app / removed_app / changed (YYYY-MM-DD). Default 30 days ago."),
   category: external_exports.enum(CATEGORY_IDS).optional().describe("Main category, labelled by a model from the store's catalogue, e.g. 'jewellery', 'automotive', 'toys-games'. Works even when product types are empty or German. truffle_index_stats lists all with counts."),
   subcategory: external_exports.enum(SUBCATEGORY_IDS).optional().describe("Niche inside a category, e.g. 'streetwear' (fashion), 'rings' (jewellery), 'tabletop-rpg' (toys-games), 'natural-cosmetics'. Combine with signals: subcategory 'streetwear' + signals ['vegan'] = vegan streetwear. truffle_index_stats lists the common ones."),
   business_type: external_exports.array(external_exports.enum(BUSINESS_TYPE_IDS)).optional().describe("Where products come from: own_brand (makes its own), reseller (sells other brands), distributor (official importer/wholesaler), dropshipper (generic imports), other. ['own_brand'] = real brands only."),
@@ -69199,7 +69617,7 @@ var searchInput = {
   segment: external_exports.array(external_exports.enum(SEGMENT_IDS)).optional().describe("Price position within its category: budget, mid, premium, luxury."),
   audience: external_exports.enum(AUDIENCE_IDS).optional().describe("Main audience: women, men, kids, everyone."),
   signals: external_exports.array(external_exports.enum(SIGNAL_IDS)).optional().describe("Store must have ALL of these: handmade, sustainable, vegan, personalised, made_locally (made in DE/AT/CH), second_hand."),
-  sort: external_exports.enum(["relevance", "products_desc", "products_asc", "newest", "oldest", "price_desc", "price_asc", "random"]).optional(),
+  sort: external_exports.enum(["relevance", "products_desc", "products_asc", "newest", "oldest", "price_desc", "price_asc", "followers_desc", "active_desc", "app_spend_desc", "reviews_desc", "recently_changed", "random"]).optional().describe("newest/oldest = store opening month; active_desc = most new products in 90 days; recently_changed = latest logged change first."),
   limit: external_exports.number().int().min(1).max(200).optional().describe("Rows to return. Default 25, max 200."),
   offset: external_exports.number().int().min(0).optional().describe("Pagination offset.")
 };
@@ -69207,6 +69625,14 @@ var researchInput = {
   domain: external_exports.string().describe("Store domain or URL, e.g. 'example.de' or 'https://www.example.de/products/x'."),
   detail: external_exports.enum(["brief", "full"]).optional().describe("'brief' (~250 tokens, for qualifying many stores) or 'full' (~900 tokens). Default full."),
   refresh: external_exports.boolean().optional().describe("Ignore the 7-day cache and fetch live.")
+};
+var changesInput = {
+  kind: external_exports.array(external_exports.enum(CHANGE_KINDS)).optional().describe("Only these kinds of change. Default all."),
+  item: external_exports.string().optional().describe("For app_added/app_removed or channel changes: only this app or channel id, e.g. 'klaviyo'."),
+  since: external_exports.string().regex(DATE).optional().describe("From this date (YYYY-MM-DD). Default 30 days ago."),
+  domain: external_exports.string().optional().describe("Only this store's history."),
+  limit: external_exports.number().int().min(1).max(200).optional().describe("Default 50."),
+  offset: external_exports.number().int().min(0).optional()
 };
 var researchManyInput = {
   domains: external_exports.array(external_exports.string()).min(1).max(10).describe("Up to 10 store domains, researched in parallel."),
@@ -69227,6 +69653,12 @@ function briefReport(r) {
     newest_product: r.catalogue?.last_product_at ?? null,
     revenue: r.revenue_estimate?.label ?? null,
     labels: r.labels ?? null,
+    opened: r.profile?.opened_est ?? null,
+    new_products_90d: r.profile?.products_added.last_90d ?? null,
+    instagram_followers: r.profile?.instagram?.followers ?? null,
+    channels: r.profile?.channels.length ? r.profile.channels : void 0,
+    company_group: r.profile?.company_group ?? void 0,
+    recent_changes: r.profile?.history.length ? r.profile.history.slice(0, 3) : void 0,
     apps: r.storefront?.apps.map((a) => a.id) ?? [],
     theme: r.storefront?.theme ?? null,
     socials: Object.keys(r.storefront?.socials ?? {}),
@@ -69287,6 +69719,19 @@ async function runResearchMany(db, domains, detail = "brief") {
   const failed = out.filter((r) => "error" in r).length;
   return { researched: out.length, succeeded: out.length - failed, failed, results: out, ...note ? { note } : {} };
 }
+function runChanges(db, input) {
+  const r = listChanges(db, input);
+  const offset = input.offset ?? 0;
+  const next2 = offset + r.changes.length < r.total ? offset + r.changes.length : null;
+  return {
+    total: r.total,
+    returned: r.changes.length,
+    has_more: next2 !== null,
+    next_offset: next2,
+    changes: r.changes,
+    hint: r.total === 0 ? "No changes logged for these filters yet. History builds up as stores are re-checked (every two weeks, Instagram monthly)." : "Each row: store, date, kind, item (app/channel id) and old/new values. Filter search with added_app/removed_app/changed for full store rows."
+  };
+}
 function runStats(db) {
   return {
     ...indexStats(db),
@@ -69342,6 +69787,7 @@ var searchOutput = external_exports.object({
 }).passthrough();
 var researchOutput = external_exports.object({ domain: external_exports.string(), name: external_exports.string().nullable().optional(), status: external_exports.string().optional(), cached: external_exports.boolean().optional() }).passthrough();
 var researchManyOutput = external_exports.object({ researched: external_exports.number(), succeeded: external_exports.number(), failed: external_exports.number(), results: external_exports.array(row), note: external_exports.string().optional() }).passthrough();
+var changesOutput = external_exports.object({ total: external_exports.number(), returned: external_exports.number(), has_more: external_exports.boolean(), next_offset: external_exports.number().nullable(), changes: external_exports.array(external_exports.object({}).passthrough()) }).passthrough();
 var statsOutput = external_exports.object({ stores_active: external_exports.number(), stores_total: external_exports.number(), app_ids: external_exports.record(external_exports.string(), external_exports.array(external_exports.string())), coverage_note: external_exports.string() }).passthrough();
 var server = new McpServer(
   { name: "truffle", version: VERSION },
@@ -69357,7 +69803,7 @@ server.registerTool(
   "truffle_search_stores",
   {
     title: "Search Shopify stores",
-    description: "Filter the Truffle index of Shopify stores by country, category, business type (own brand vs reseller), B2B/B2C, price segment, signals (handmade, sustainable\u2026), size, price, estimated monthly revenue band, apps present or missing, theme, store age and keywords. Returns compact rows (~70 tokens each), the total count and has_more/next_offset for paging. Fast, no network. Use it to build a candidate list, then truffle_research_stores to qualify.",
+    description: "Filter the Truffle index of Shopify stores by country, category, business type (own brand vs reseller), B2B/B2C, price segment, signals (handmade, sustainable\u2026), size, price, estimated monthly revenue band, apps present or missing, theme, store age and keywords. Also: company vs one-person shop and legal form, companies with several stores, marketplaces (Amazon, Etsy\u2026), carriers, pages (wholesale, careers, store locator), Instagram followers, new products in 90 days, app spend, no dropshippers, and recent changes (installed or removed an app, theme switch). Returns compact rows (~70 tokens each), the total count and has_more/next_offset for paging. Fast, no network. Use it to build a candidate list, then truffle_research_stores to qualify.",
     inputSchema: searchInput,
     outputSchema: searchOutput,
     annotations: READS_INDEX
@@ -69398,6 +69844,20 @@ server.registerTool(
   async ({ domains, detail }) => {
     const r = await runResearchMany(getDb(), domains, detail ?? "brief");
     return r.succeeded === 0 ? fail(r) : ok(r);
+  }
+);
+server.registerTool(
+  "truffle_recent_changes",
+  {
+    title: "What changed at stores recently",
+    description: "The change log Truffle records each time it re-checks a store: apps installed or removed, theme switches, big catalogue or price moves, new marketplaces, store closed or password-protected, Instagram follower jumps. Use it to find stores at a buying moment (e.g. kind ['app_removed'] item 'yotpo'), or pass domain for one store's history. Needs the full index (a Truffle key).",
+    inputSchema: changesInput,
+    outputSchema: changesOutput,
+    annotations: READS_INDEX
+  },
+  async (input) => {
+    if (await useLocal()) return ok(runChanges(getDb(), input));
+    return fail({ error: "needs_key", message: `Change history is part of the full index. ${PREVIEW_NOTE}`, retryable: false });
   }
 );
 server.registerTool(
