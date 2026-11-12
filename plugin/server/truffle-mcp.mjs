@@ -53763,6 +53763,7 @@ function setDiff(kindAdded, kindRemoved, before2, after2) {
     ...[...b].filter((x) => !a.has(x)).map((item) => ({ kind: kindRemoved, item, old: null, new: null }))
   ];
 }
+var CHANNELS_SINCE = "2026-11-10T23:05:00Z";
 function diffStore(before2, after2) {
   const out = [];
   if (after2.status && after2.status !== before2.status) out.push({ kind: "status", item: null, old: before2.status, new: after2.status });
@@ -53770,7 +53771,7 @@ function diffStore(before2, after2) {
   const seenAt = before2.last_checked_at ?? "";
   const detectable = (id) => (APP_CATALOGUE.find((a) => a.id === id)?.since ?? "") <= seenAt;
   out.push(...setDiff("app_added", "app_removed", before2.apps, after2.apps).filter((c) => c.kind !== "app_added" || detectable(c.item)));
-  out.push(...setDiff("channel_added", "channel_removed", before2.channels, after2.channels));
+  if (seenAt >= CHANNELS_SINCE) out.push(...setDiff("channel_added", "channel_removed", before2.channels, after2.channels));
   if (after2.theme && before2.theme && after2.theme !== before2.theme) out.push({ kind: "theme", item: null, old: before2.theme, new: after2.theme });
   if (after2.name && before2.name && after2.name !== before2.name) out.push({ kind: "name", item: null, old: before2.name, new: after2.name });
   const pb = before2.product_count;
@@ -69120,6 +69121,7 @@ async function probeStore(input, opts = {}) {
   }
   const page = parseStorefront(home.text, home.url);
   const meta = await fetchMeta(origin, { deadline }).catch((err) => {
+    if (opts.requireMeta && err instanceof TruffleError && err.retryable) throw err;
     if (err instanceof TruffleError && err.code === "robots_disallowed") notes.push("robots.txt disallows /meta.json");
     return null;
   });
