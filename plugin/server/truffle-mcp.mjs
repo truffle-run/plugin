@@ -68371,6 +68371,39 @@ var SOCIAL_HOSTS = {
   x: /(^|\.)(twitter\.com|x\.com)$/
 };
 var SOCIAL_SKIP = /\/(sharer|share|intent|dialog|plugins|p\/|reel\/|watch\?|embed)/i;
+function socialNetwork(abs) {
+  if (abs.pathname.length <= 1 || SOCIAL_SKIP.test(abs.pathname + abs.search)) return null;
+  for (const [network, re] of Object.entries(SOCIAL_HOSTS)) {
+    if (re.test(abs.hostname)) return network === "instagram" && !instagramHandle(abs.toString()) ? null : network;
+  }
+  return null;
+}
+function socialLinksIn(html3, pageUrl) {
+  const $2 = load(html3);
+  const out = {};
+  $2("a[href]").each((_, el) => {
+    try {
+      const abs = new URL(($2(el).attr("href") ?? "").trim(), pageUrl);
+      const network = socialNetwork(abs);
+      if (network && !out[network]) out[network] = abs.toString();
+    } catch {
+    }
+  });
+  return out;
+}
+var IG_NOT_PROFILE = /* @__PURE__ */ new Set(["p", "reel", "reels", "explore", "stories", "accounts", "tv", "direct", "about", "developer", "legal", "https:", "http:"]);
+var IG_DEMO = /* @__PURE__ */ new Set(["shopify", "shopifyplus", "instagram", "meta", "facebook"]);
+function instagramHandle(url) {
+  try {
+    const parts = new URL(url).pathname.split("/").filter(Boolean);
+    const at = parts.findLastIndex((p) => /(^|\.)instagram\.com$/i.test(p));
+    const handle = (at >= 0 ? parts[at + 1] : parts[0])?.toLowerCase().replace(/^@/, "");
+    if (!handle || IG_NOT_PROFILE.has(handle) || IG_DEMO.has(handle) || !/^[a-z0-9._]{1,30}$/.test(handle)) return null;
+    return handle;
+  } catch {
+    return null;
+  }
+}
 var IMPRESSUM_RE = /impressum|imprint|legal[-_ ]?notice|anbieterkennzeichnung|rechtliche[s]? hinweis/i;
 var CONTACT_RE = /\/(pages\/)?(kontakt|contact|contact-us|kontaktformular)\b/i;
 function parseStorefront(html3, pageUrl) {
@@ -68418,12 +68451,18 @@ function parseStorefront(html3, pageUrl) {
       return;
     }
     for (const [channel, re] of CHANNEL_HOSTS) if (re.test(abs.hostname) && abs.pathname.length > 1) channels.add(channel);
-    for (const [network, re] of Object.entries(SOCIAL_HOSTS)) {
-      if (re.test(abs.hostname) && !socials[network] && !SOCIAL_SKIP.test(abs.pathname + abs.search) && abs.pathname.length > 1) {
-        socials[network] = abs.toString();
+    const network = socialNetwork(abs);
+    if (network && !socials[network]) socials[network] = abs.toString();
+  });
+  if (!socials.instagram) {
+    for (const m of html3.matchAll(/instagram\.com(?:\\?\/)+([A-Za-z0-9._@-]{2,40})/g)) {
+      const handle = instagramHandle(`https://www.instagram.com/${m[1]}`);
+      if (handle) {
+        socials.instagram = `https://www.instagram.com/${handle}/`;
+        break;
       }
     }
-  });
+  }
   const lang = $2("html").attr("lang")?.trim() || null;
   const alternateHosts = /* @__PURE__ */ new Set();
   $2("link[rel='alternate'][hreflang][href]").each((_, el) => {
@@ -69076,6 +69115,9 @@ async function fetchProductSample(origin, opts = {}) {
 
 // ../core/src/research.ts
 var IMPRESSUM_FALLBACKS = ["/policies/legal-notice", "/pages/impressum", "/pages/imprint", "/pages/impressum-1", "/pages/legal-notice"];
+function addSocials(page, html3, url) {
+  for (const [network, link] of Object.entries(socialLinksIn(html3, url))) page.socials[network] ??= link;
+}
 async function findImpressum(origin, page, deadline, notes) {
   const tried = /* @__PURE__ */ new Set();
   const candidates = [...page.impressumLinks.slice(0, 3), ...IMPRESSUM_FALLBACKS.map((p) => origin + p)];
@@ -69086,7 +69128,10 @@ async function findImpressum(origin, page, deadline, notes) {
       const res = await politeGet(url, { deadline });
       if (res.status !== 200) continue;
       const lines = extractLines(res.text);
-      if (looksLikeImpressum(lines)) return parseImpressum(lines, res.url);
+      if (looksLikeImpressum(lines)) {
+        addSocials(page, res.text, res.url);
+        return parseImpressum(lines, res.url);
+      }
     } catch (err) {
       if (err instanceof TruffleError) {
         if (err.code === "robots_disallowed") notes.push(`robots.txt disallows ${new URL(url).pathname}`);
@@ -69137,7 +69182,11 @@ async function probeStore(input, opts = {}) {
   if (opts.withExtras) {
     const count = meta?.product_count ?? 0;
     result.oldestProductAt = count > (products?.sample_size ?? 0) ? await fetchOldestProductDate(origin, count, { deadline }).catch(() => null) : products?.first_product_at ?? null;
-    result.policyCarriers = await politeGet(`${origin}/policies/shipping-policy`, { deadline, maxBytes: 6e5 }).then((res) => res.status === 200 ? carriersInText(extractLines(res.text)) : []).catch(() => []);
+    result.policyCarriers = await politeGet(`${origin}/policies/shipping-policy`, { deadline, maxBytes: 6e5 }).then((res) => {
+      if (res.status !== 200) return [];
+      addSocials(page, res.text, res.url);
+      return carriersInText(extractLines(res.text));
+    }).catch(() => []);
     result.sisterStores = await findSisterStores(page.alternateHosts, meta?.myshopify_domain ?? null, deadline);
   }
   return result;
