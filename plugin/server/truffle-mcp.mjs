@@ -22117,7 +22117,7 @@ var require_socks5_client = __commonJS({
           return;
         }
         const version2 = this.buffer[0];
-        const reply = this.buffer[1];
+        const reply2 = this.buffer[1];
         const addressType = this.buffer[3];
         if (version2 !== SOCKS_VERSION) {
           throw new Socks5ProxyError(`Invalid SOCKS version in reply: ${version2}`, "UND_ERR_SOCKS5_REPLY_VERSION");
@@ -22138,9 +22138,9 @@ var require_socks5_client = __commonJS({
         if (this.buffer.length < responseLength) {
           return;
         }
-        if (reply !== REPLY_CODES.SUCCEEDED) {
-          const errorMessage = this.getReplyErrorMessage(reply);
-          throw new Socks5ProxyError(`SOCKS5 connection failed: ${errorMessage}`, `UND_ERR_SOCKS5_REPLY_${reply}`);
+        if (reply2 !== REPLY_CODES.SUCCEEDED) {
+          const errorMessage = this.getReplyErrorMessage(reply2);
+          throw new Socks5ProxyError(`SOCKS5 connection failed: ${errorMessage}`, `UND_ERR_SOCKS5_REPLY_${reply2}`);
         }
         let boundAddress;
         let offset = 4;
@@ -22171,8 +22171,8 @@ var require_socks5_client = __commonJS({
       /**
        * Get human-readable error message for reply code
        */
-      getReplyErrorMessage(reply) {
-        switch (reply) {
+      getReplyErrorMessage(reply2) {
+        switch (reply2) {
           case REPLY_CODES.GENERAL_FAILURE:
             return "General SOCKS server failure";
           case REPLY_CODES.CONNECTION_NOT_ALLOWED:
@@ -22190,7 +22190,7 @@ var require_socks5_client = __commonJS({
           case REPLY_CODES.ADDRESS_TYPE_NOT_SUPPORTED:
             return "Address type not supported";
           default:
-            return `Unknown error code: ${reply}`;
+            return `Unknown error code: ${reply2}`;
         }
       }
     };
@@ -69866,6 +69866,114 @@ function runStats(db) {
   };
 }
 
+// src/register.ts
+var INSTRUCTIONS = [
+  "Truffle finds and researches Shopify stores (German stores indexed) so you can build qualified lead lists.",
+  "Workflow: truffle_index_stats (once, to learn app ids and coverage) -> truffle_search_stores (narrow down) -> truffle_research_stores (live detail, 10 at a time, brief) -> truffle_research_store (full) for the best fits.",
+  "Keep context small: use detail 'brief' for qualifying many stores. Responses are capped at about 25,000 characters."
+].join("\n");
+var ok = (value) => ({ content: [{ type: "text", text: JSON.stringify(value) }], structuredContent: value });
+var fail = (value) => ({ isError: true, content: [{ type: "text", text: JSON.stringify(value) }] });
+var reply = (r) => r.ok ? ok(r.value) : fail(r.value);
+var READS_INDEX = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
+var READS_WEB = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+var row = external_exports.record(external_exports.string(), external_exports.unknown());
+var searchOutput = external_exports.object({
+  total: external_exports.number(),
+  returned: external_exports.number(),
+  offset: external_exports.number(),
+  has_more: external_exports.boolean(),
+  next_offset: external_exports.number().nullable(),
+  hits: external_exports.array(row),
+  hint: external_exports.string(),
+  truncated: external_exports.boolean().optional()
+}).passthrough();
+var researchOutput = external_exports.object({ domain: external_exports.string(), name: external_exports.string().nullable().optional(), status: external_exports.string().optional(), cached: external_exports.boolean().optional() }).passthrough();
+var researchManyOutput = external_exports.object({ researched: external_exports.number(), succeeded: external_exports.number(), failed: external_exports.number(), results: external_exports.array(row), note: external_exports.string().optional() }).passthrough();
+var changesOutput = external_exports.object({ total: external_exports.number(), returned: external_exports.number(), has_more: external_exports.boolean(), next_offset: external_exports.number().nullable(), changes: external_exports.array(external_exports.object({}).passthrough()) }).passthrough();
+var statsOutput = external_exports.object({ stores_active: external_exports.number(), stores_total: external_exports.number(), app_ids: external_exports.record(external_exports.string(), external_exports.array(external_exports.string())), coverage_note: external_exports.string() }).passthrough();
+function registerTruffleTools(server2, backend2) {
+  server2.registerTool(
+    "truffle_search_stores",
+    {
+      title: "Search Shopify stores",
+      description: "Filter the Truffle index of Shopify stores by country, category, business type (own brand vs reseller), B2B/B2C, price segment, signals (handmade, sustainable\u2026), size, price, estimated monthly revenue band, apps present or missing, theme, store age and keywords. Also: company vs one-person shop and legal form, companies with several stores, marketplaces (Amazon, Etsy\u2026), carriers, pages (wholesale, careers, store locator), Instagram followers, new products in 90 days, app spend, no dropshippers, and recent changes (installed or removed an app, theme switch). Returns compact rows (~70 tokens each), the total count and has_more/next_offset for paging. Fast, no network. Use it to build a candidate list, then truffle_research_stores to qualify.",
+      inputSchema: searchInput,
+      outputSchema: searchOutput,
+      annotations: READS_INDEX
+    },
+    async (input) => reply(await backend2.search(input))
+  );
+  server2.registerTool(
+    "truffle_research_store",
+    {
+      title: "Research one store live",
+      description: "Live research of one Shopify store (indexed or not): catalogue stats, price range, product types, theme, detected apps, socials, the business behind it from its German Impressum (private data of one-person shops withheld) and every contact channel found: email, phone, contact form, socials, address. Cached 7 days. Takes 3-20s. Returns isError with a reason and next step if the store can't be researched.",
+      inputSchema: researchInput,
+      outputSchema: researchOutput,
+      annotations: READS_WEB
+    },
+    async ({ domain, detail, refresh }) => reply(await backend2.research(domain, detail ?? "full", refresh ?? false))
+  );
+  server2.registerTool(
+    "truffle_research_stores",
+    {
+      title: "Research up to 10 stores in parallel",
+      description: "Batch version of truffle_research_store for qualifying many candidates. Default detail 'brief' (~250 tokens per store). A store that fails returns an error in its slot instead of failing the batch; succeeded/failed counts are included.",
+      inputSchema: researchManyInput,
+      outputSchema: researchManyOutput,
+      annotations: READS_WEB
+    },
+    async ({ domains, detail }) => reply(await backend2.researchMany(domains, detail ?? "brief"))
+  );
+  server2.registerTool(
+    "truffle_recent_changes",
+    {
+      title: "What changed at stores recently",
+      description: "The change log Truffle records each time it re-checks a store: apps installed or removed, theme switches, big catalogue or price moves, new marketplaces, store closed or password-protected, Instagram follower jumps. Use it to find stores at a buying moment (e.g. kind ['app_removed'] item 'yotpo'), or pass domain for one store's history. Needs the full index (a Truffle key).",
+      inputSchema: changesInput,
+      outputSchema: changesOutput,
+      annotations: READS_INDEX
+    },
+    async (input) => reply(await backend2.changes(input))
+  );
+  server2.registerTool(
+    "truffle_index_stats",
+    {
+      title: "What the index holds",
+      description: "Store counts, top apps and themes, product-count distribution, and the valid app ids and categories for truffle_search_stores filters. Call once at the start.",
+      inputSchema: {},
+      outputSchema: statsOutput,
+      annotations: READS_INDEX
+    },
+    async () => reply(await backend2.stats())
+  );
+  server2.registerPrompt(
+    "find-leads",
+    {
+      title: "Find qualified Shopify leads",
+      description: "Guided workflow: describe what you sell and who you want; get a qualified lead table.",
+      argsSchema: {
+        product: external_exports.string().describe("What you sell and why a store would want it."),
+        target: external_exports.string().optional().describe("Who you want, e.g. 'small German jewellery brands'.")
+      }
+    },
+    ({ product, target }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I sell: ${product}
+Target: ${target ?? "small-to-medium German Shopify brands"}
+Use Truffle: call truffle_index_stats, translate my target into truffle_search_stores filters, research the best candidates with truffle_research_stores (brief), and give me a table of qualified leads with fit reason, size, apps and the best contact channels. Explain any filters you chose.`
+          }
+        }
+      ]
+    })
+  );
+}
+
 // src/index.ts
 var here = path4.dirname(fileURLToPath(import.meta.url));
 var shippedCandidates = [
@@ -69896,115 +70004,41 @@ async function useLocal() {
   if (sync && readKey()) return (await sync).ok && hasFullIndex();
   return false;
 }
-var ok = (value) => ({ content: [{ type: "text", text: JSON.stringify(value) }], structuredContent: value });
-var fail = (value) => ({ isError: true, content: [{ type: "text", text: JSON.stringify(value) }] });
-var READS_INDEX = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
-var READS_WEB = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
-var row = external_exports.record(external_exports.string(), external_exports.unknown());
-var searchOutput = external_exports.object({
-  total: external_exports.number(),
-  returned: external_exports.number(),
-  offset: external_exports.number(),
-  has_more: external_exports.boolean(),
-  next_offset: external_exports.number().nullable(),
-  hits: external_exports.array(row),
-  hint: external_exports.string(),
-  truncated: external_exports.boolean().optional()
-}).passthrough();
-var researchOutput = external_exports.object({ domain: external_exports.string(), name: external_exports.string().nullable().optional(), status: external_exports.string().optional(), cached: external_exports.boolean().optional() }).passthrough();
-var researchManyOutput = external_exports.object({ researched: external_exports.number(), succeeded: external_exports.number(), failed: external_exports.number(), results: external_exports.array(row), note: external_exports.string().optional() }).passthrough();
-var changesOutput = external_exports.object({ total: external_exports.number(), returned: external_exports.number(), has_more: external_exports.boolean(), next_offset: external_exports.number().nullable(), changes: external_exports.array(external_exports.object({}).passthrough()) }).passthrough();
-var statsOutput = external_exports.object({ stores_active: external_exports.number(), stores_total: external_exports.number(), app_ids: external_exports.record(external_exports.string(), external_exports.array(external_exports.string())), coverage_note: external_exports.string() }).passthrough();
-var server = new McpServer(
-  { name: "truffle", version: VERSION },
-  {
-    instructions: [
-      "Truffle finds and researches Shopify stores (German stores indexed) so you can build qualified lead lists.",
-      "Workflow: truffle_index_stats (once, to learn app ids and coverage) -> truffle_search_stores (narrow down) -> truffle_research_stores (live detail, 10 at a time, brief) -> truffle_research_store (full) for the best fits.",
-      "Keep context small: use detail 'brief' for qualifying many stores. Responses are capped at about 25,000 characters."
-    ].join("\n")
-  }
-);
-server.registerTool(
-  "truffle_search_stores",
-  {
-    title: "Search Shopify stores",
-    description: "Filter the Truffle index of Shopify stores by country, category, business type (own brand vs reseller), B2B/B2C, price segment, signals (handmade, sustainable\u2026), size, price, estimated monthly revenue band, apps present or missing, theme, store age and keywords. Also: company vs one-person shop and legal form, companies with several stores, marketplaces (Amazon, Etsy\u2026), carriers, pages (wholesale, careers, store locator), Instagram followers, new products in 90 days, app spend, no dropshippers, and recent changes (installed or removed an app, theme switch). Returns compact rows (~70 tokens each), the total count and has_more/next_offset for paging. Fast, no network. Use it to build a candidate list, then truffle_research_stores to qualify.",
-    inputSchema: searchInput,
-    outputSchema: searchOutput,
-    annotations: READS_INDEX
-  },
-  async (input) => {
-    if (await useLocal()) return ok(runSearch(getDb(), input));
+var server = new McpServer({ name: "truffle", version: VERSION }, { instructions: INSTRUCTIONS });
+var backend = {
+  async search(input) {
+    if (await useLocal()) return { ok: true, value: runSearch(getDb(), input) };
     try {
       const r = await previewSearch(input);
-      return ok({ ...r, has_more: false, next_offset: null, preview: true, hint: PREVIEW_NOTE });
+      return { ok: true, value: { ...r, has_more: false, next_offset: null, preview: true, hint: PREVIEW_NOTE } };
     } catch (err) {
-      return fail({ error: "preview_unavailable", message: `Free preview failed: ${err.message}. Research still works: truffle_research_store.`, retryable: true });
+      return { ok: false, value: { error: "preview_unavailable", message: `Free preview failed: ${err.message}. Research still works: truffle_research_store.`, retryable: true } };
     }
-  }
-);
-server.registerTool(
-  "truffle_research_store",
-  {
-    title: "Research one store live",
-    description: "Live research of one Shopify store (indexed or not): catalogue stats, price range, product types, theme, detected apps, socials, the business behind it from its German Impressum (private data of one-person shops withheld) and every contact channel found: email, phone, contact form, socials, address. Cached 7 days. Takes 3-20s. Returns isError with a reason and next step if the store can't be researched.",
-    inputSchema: researchInput,
-    outputSchema: researchOutput,
-    annotations: READS_WEB
   },
-  async ({ domain, detail, refresh }) => {
-    const r = await runResearch(getDb(), domain, detail ?? "full", refresh ?? false);
-    return "error" in r ? fail(r) : ok(r);
-  }
-);
-server.registerTool(
-  "truffle_research_stores",
-  {
-    title: "Research up to 10 stores in parallel",
-    description: "Batch version of truffle_research_store for qualifying many candidates. Default detail 'brief' (~250 tokens per store). A store that fails returns an error in its slot instead of failing the batch; succeeded/failed counts are included.",
-    inputSchema: researchManyInput,
-    outputSchema: researchManyOutput,
-    annotations: READS_WEB
-  },
-  async ({ domains, detail }) => {
-    const r = await runResearchMany(getDb(), domains, detail ?? "brief");
-    return r.succeeded === 0 ? fail(r) : ok(r);
-  }
-);
-server.registerTool(
-  "truffle_recent_changes",
-  {
-    title: "What changed at stores recently",
-    description: "The change log Truffle records each time it re-checks a store: apps installed or removed, theme switches, big catalogue or price moves, new marketplaces, store closed or password-protected, Instagram follower jumps. Use it to find stores at a buying moment (e.g. kind ['app_removed'] item 'yotpo'), or pass domain for one store's history. Needs the full index (a Truffle key).",
-    inputSchema: changesInput,
-    outputSchema: changesOutput,
-    annotations: READS_INDEX
-  },
-  async (input) => {
-    if (await useLocal()) return ok(runChanges(getDb(), input));
-    return fail({ error: "needs_key", message: `Change history is part of the full index. ${PREVIEW_NOTE}`, retryable: false });
-  }
-);
-server.registerTool(
-  "truffle_index_stats",
-  {
-    title: "What the index holds",
-    description: "Store counts, top apps and themes, product-count distribution, and the valid app ids and categories for truffle_search_stores filters. Call once at the start.",
-    inputSchema: {},
-    outputSchema: statsOutput,
-    annotations: READS_INDEX
-  },
-  async () => {
-    if (await useLocal()) return ok(runStats(getDb()));
+  async stats() {
+    if (await useLocal()) return { ok: true, value: runStats(getDb()) };
     try {
       const stats = await previewStats();
-      return ok({ ...stats, coverage_note: `Counts for the full index. ${PREVIEW_NOTE}`, preview: true });
+      return { ok: true, value: { ...stats, coverage_note: `Counts for the full index. ${PREVIEW_NOTE}`, preview: true } };
     } catch (err) {
-      return fail({ error: "preview_unavailable", message: `Free preview failed: ${err.message}`, retryable: true });
+      return { ok: false, value: { error: "preview_unavailable", message: `Free preview failed: ${err.message}`, retryable: true } };
     }
+  },
+  // Research runs on the user's machine: no key needed.
+  async research(domain, detail, refresh) {
+    const r = await runResearch(getDb(), domain, detail, refresh);
+    return "error" in r ? { ok: false, value: r } : { ok: true, value: r };
+  },
+  async researchMany(domains, detail) {
+    const r = await runResearchMany(getDb(), domains, detail);
+    return r.succeeded === 0 ? { ok: false, value: r } : { ok: true, value: r };
+  },
+  async changes(input) {
+    if (await useLocal()) return { ok: true, value: runChanges(getDb(), input) };
+    return { ok: false, value: { error: "needs_key", message: `Change history is part of the full index. ${PREVIEW_NOTE}`, retryable: false } };
   }
-);
+};
+registerTruffleTools(server, backend);
 server.registerTool(
   "truffle_activate",
   {
@@ -70027,26 +70061,5 @@ server.registerTool(
     const stores = getDb().prepare("SELECT count(*) n FROM stores WHERE status = 'active'").get().n;
     return ok({ activated: true, stores, version: r.version, message: `Truffle is unlocked: ${stores.toLocaleString("en")} active stores, refreshed daily.` });
   }
-);
-server.registerPrompt(
-  "find-leads",
-  {
-    title: "Find qualified Shopify leads",
-    description: "Guided workflow: describe what you sell and who you want; get a qualified lead table.",
-    argsSchema: { product: external_exports.string().describe("What you sell and why a store would want it."), target: external_exports.string().optional().describe("Who you want, e.g. 'small German jewellery brands'.") }
-  },
-  ({ product, target }) => ({
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: `I sell: ${product}
-Target: ${target ?? "small-to-medium German Shopify brands"}
-Use Truffle: call truffle_index_stats, translate my target into truffle_search_stores filters, research the best candidates with truffle_research_stores (brief), and give me a table of qualified leads with fit reason, size, apps and the best contact channels. Explain any filters you chose.`
-        }
-      }
-    ]
-  })
 );
 await server.connect(new StdioServerTransport());
