@@ -69316,7 +69316,8 @@ async function researchStore(db, input, { refresh = false } = {}) {
   const probe = await probeStore(domain, { withImpressum: true, withExtras: true, deadline: Date.now() + RESEARCH_BUDGET_MS });
   if (probe.status === "not_shopify") throw new TruffleError("not_shopify", "This site does not look like a Shopify store.", domain);
   const row2 = probeToRow(probe, "research");
-  if (!(row2.myshopify_domain && myshopifyTaken(db, row2.myshopify_domain, row2.domain))) upsertTracked(db, row2);
+  const usable = probe.status === "active" || probe.status === "password";
+  if (usable && !(row2.myshopify_domain && myshopifyTaken(db, row2.myshopify_domain, row2.domain))) upsertTracked(db, row2);
   const report = buildReport(probe);
   const partial2 = report.notes.some((n) => /budget_exceeded|rate_limited|challenged/.test(n)) || report.status === "active" && !report.catalogue?.sample_size;
   if (!partial2) {
