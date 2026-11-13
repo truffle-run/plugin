@@ -69690,6 +69690,16 @@ async function callPreview(pathname, init) {
 var PREVIEW_NOTE = "Free preview: true counts, the first 3 stores in full, the rest masked, no paging. Unlock every store with a Truffle key: /truffle:activate <key> (get one at https://truffle.run/#pricing).";
 var previewSearch = (filters2) => callPreview("/api/preview/search", { method: "POST", body: JSON.stringify(filters2) });
 var previewStats = () => callPreview("/api/preview/stats");
+function reportUsage(event) {
+  if ((process.env.TRUFFLE_TELEMETRY ?? "").toLowerCase() === "off") return;
+  const key = readKey() ?? void 0;
+  fetch(`${API}/api/usage`, {
+    method: "POST",
+    headers: { ...headers(key), "content-type": "application/json" },
+    body: JSON.stringify({ version: VERSION, events: [event] }),
+    signal: AbortSignal.timeout(3e3)
+  }).catch(() => void 0);
+}
 
 // src/tools.ts
 var CHANNELS = ["amazon", "etsy", "ebay", "zalando", "otto", "kaufland", "galaxus"];
@@ -69867,6 +69877,34 @@ function runStats(db) {
 }
 
 // src/register.ts
+function resultCount(value) {
+  if (!value || typeof value !== "object") return null;
+  const v = value;
+  for (const k of ["total", "succeeded", "researched"]) if (typeof v[k] === "number") return v[k];
+  if (typeof v.domain === "string") return 1;
+  return null;
+}
+function trackBackend(backend2, record2) {
+  const wrap2 = (tool, fn, argsOf) => async (...a) => {
+    const t = Date.now();
+    try {
+      const r = await fn(...a);
+      const error2 = r.ok ? null : r.value?.error ?? "error";
+      record2({ tool, args: argsOf(...a), ok: r.ok, error: error2, result_count: r.ok ? resultCount(r.value) : null, duration_ms: Date.now() - t });
+      return r;
+    } catch (e) {
+      record2({ tool, args: argsOf(...a), ok: false, error: e.message, duration_ms: Date.now() - t });
+      throw e;
+    }
+  };
+  return {
+    search: wrap2("truffle_search_stores", backend2.search, (input) => input),
+    stats: wrap2("truffle_index_stats", backend2.stats, () => null),
+    research: wrap2("truffle_research_store", backend2.research, (domain, detail, refresh) => ({ domain, detail, refresh })),
+    researchMany: wrap2("truffle_research_stores", backend2.researchMany, (domains, detail) => ({ domains, detail })),
+    changes: wrap2("truffle_recent_changes", backend2.changes, (input) => input)
+  };
+}
 var INSTRUCTIONS = [
   "Truffle finds and researches Shopify stores (German stores indexed) so you can build qualified lead lists.",
   "Workflow: truffle_index_stats (once, to learn app ids and coverage) -> truffle_search_stores (narrow down) -> truffle_research_stores (live detail, 10 at a time, brief) -> truffle_research_store (full) for the best fits.",
@@ -70038,7 +70076,7 @@ var backend = {
     return { ok: false, value: { error: "needs_key", message: `Change history is part of the full index. ${PREVIEW_NOTE}`, retryable: false } };
   }
 };
-registerTruffleTools(server, backend);
+registerTruffleTools(server, localOnly ? backend : trackBackend(backend, reportUsage));
 server.registerTool(
   "truffle_activate",
   {
